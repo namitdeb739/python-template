@@ -36,7 +36,8 @@ class Config:
     # Experiment tracking (uncomment for your tracker)
     # experiment_name: str = "default"
     # run_name: str | None = None
-    # tags: list[str] = field(default_factory=list)  # requires: from dataclasses import field
+    # tags: list[str] = field(default_factory=list)  # noqa: E501
+    # ^ requires: from dataclasses import field
 
     def __post_init__(self) -> None:
         self.data_dir = Path(self.data_dir)
