@@ -48,6 +48,8 @@ echo ""
 
 if [[ -d "src/project_name" && "$PACKAGE_NAME" != "project_name" ]]; then
     mv "src/project_name" "src/${PACKAGE_NAME}"
+    # Stage the rename so git ls-files returns the new paths
+    git add -A
     echo -e "  ${GREEN}✓${NC} Renamed src/project_name → src/${PACKAGE_NAME}"
 fi
 
@@ -58,7 +60,7 @@ find_and_replace() {
     local new="$2"
     # Use git ls-files to only touch tracked text files
     while IFS= read -r -d '' file; do
-        if file --brief "$file" | grep -q text; then
+        if [[ -f "$file" ]] && file --brief "$file" | grep -q text; then
             sedi "s|${old}|${new}|g" "$file" 2>/dev/null || true
         fi
     done < <(git ls-files -z)
@@ -112,6 +114,7 @@ fi
 
 echo ""
 echo -e "${CYAN}Installing dependencies...${NC}"
+git config core.longpaths true
 uv lock
 uv sync --dev
 uv run pre-commit install

@@ -8,6 +8,7 @@ init:
 
 # Install dependencies and set up dev environment
 setup:
+    git config core.longpaths true
     uv sync --dev
     uv run pre-commit install
 
