@@ -1,6 +1,6 @@
 # Contributing
 
-See the full [Contributing Guide](docs/contributing.md) for detailed instructions.
+See the full [Contributing Guide](../docs/contributing.md) for detailed instructions.
 
 ## Quick start
 

@@ -124,6 +124,12 @@ All recipes also work with plain `uv run` commands if you don't have `just` inst
 ├── scripts/                   # Standalone scripts (data processing, training)
 ├── .devcontainer/
 │   └── devcontainer.json      # GitHub Codespaces / VS Code dev container
+├── docker/
+│   ├── Dockerfile             # Multi-stage container build (CPU)
+│   ├── Dockerfile.gpu         # CUDA-based container build (GPU)
+│   └── docker-compose.yml     # Container orchestration
+├── .devcontainer/
+│   └── devcontainer.json      # GitHub Codespaces / VS Code dev container
 ├── .github/
 │   ├── ISSUE_TEMPLATE/        # Bug report + feature request YAML forms
 │   ├── workflows/
@@ -134,6 +140,8 @@ All recipes also work with plain `uv run` commands if you don't have `just` inst
 │   │   ├── pr-title.yml       # Validate PR titles (conventional commits)
 │   │   └── commit-lint.yml    # Validate commit messages on PRs
 │   ├── CODEOWNERS             # Default PR reviewers
+│   ├── CONTRIBUTING.md        # Contributor quick-start
+│   ├── SECURITY.md            # Vulnerability disclosure policy
 │   ├── dependabot.yml         # Dependency update config
 │   └── pull_request_template.md
 ├── .vscode/
@@ -146,14 +154,8 @@ All recipes also work with plain `uv run` commands if you don't have `just` inst
 ├── .dvcignore                 # DVC exclusion patterns
 ├── .env.example               # Template environment variables
 ├── pyproject.toml             # Project metadata, dependencies, tool config
-├── Dockerfile                 # Multi-stage container build (CPU)
-├── Dockerfile.gpu             # CUDA-based container build (GPU)
-├── docker-compose.yml         # Container orchestration
 ├── .python-version            # Pin Python version (3.11)
 ├── .gitignore                 # Python, data, IDE, OS ignores
-├── SECURITY.md                # Vulnerability disclosure policy
-├── CONTRIBUTING.md            # Contributor quick-start
-├── CHANGELOG.md               # Release history
 ├── LICENSE                    # MIT
 └── README.md
 ```
@@ -355,26 +357,27 @@ Use **[Google-style docstrings](https://google.github.io/styleguide/pyguide.html
 ### Build and run
 
 ```bash
-docker compose up --build
+just docker-build    # or: docker compose -f docker/docker-compose.yml build
+just docker-run      # or: docker compose -f docker/docker-compose.yml up
 ```
 
 ### How it works
 
-The `Dockerfile` uses a multi-stage build optimized for fast rebuilds:
+Docker files live in the `docker/` directory. The `Dockerfile` uses a multi-stage build optimized for fast rebuilds:
 
 1. Copies `uv` binary from the official image (`ghcr.io/astral-sh/uv`)
 2. Installs dependencies first (`uv sync --no-dev --no-install-project`) — this layer is cached unless `pyproject.toml` or `uv.lock` change
 3. Copies source code and installs the project
 4. Runs via `uv run project-name`
 
-The `docker-compose.yml` mounts the `data/` directory as a volume and sets `PYTHONUNBUFFERED=1` for real-time log output.
+The `docker-compose.yml` uses the repo root as the build context and mounts the `data/` directory as a volume.
 
 ### GPU support
 
-A separate `Dockerfile.gpu` is included for ML workloads requiring CUDA:
+A separate `docker/Dockerfile.gpu` is included for ML workloads requiring CUDA:
 
 ```bash
-just docker-build-gpu    # or: docker build -f Dockerfile.gpu -t project-name-gpu .
+just docker-build-gpu    # or: docker build -f docker/Dockerfile.gpu -t project-name-gpu .
 ```
 
 This uses `nvidia/cuda:12.4.1-runtime-ubuntu22.04` as the base image and installs the `[ml]` extras automatically.
