@@ -86,11 +86,22 @@ just docs    # preview locally at http://127.0.0.1:8000/
 
 ## Commit messages
 
-Use clear, descriptive commit messages in the imperative mood:
+This project uses [Conventional Commits](https://www.conventionalcommits.org/). Every commit message must follow this format:
 
-- "Add user authentication endpoint"
-- "Fix off-by-one error in pagination"
-- "Remove deprecated config loader"
+```
+type: short description
+```
+
+Valid types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+
+Examples:
+
+- `feat: add user authentication endpoint`
+- `fix: resolve off-by-one error in pagination`
+- `docs: update API reference for greet module`
+- `refactor: simplify config parsing logic`
+
+The commitizen pre-commit hook validates this locally on every commit. CI also validates all commits in a PR branch.
 
 ## Pull request process
 

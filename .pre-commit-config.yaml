@@ -13,3 +13,9 @@ repos:
         additional_dependencies: []
         pass_filenames: false
         entry: mypy --config-file=pyproject.toml src/
+
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.6.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]

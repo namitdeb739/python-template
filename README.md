@@ -28,6 +28,8 @@ A modern, batteries-included Python project template with [uv](https://docs.astr
 - **PyPI publishing** workflow with trusted publishers on GitHub Release
 - **Version bumping** via `just release` with [bump-my-version](https://github.com/callowayproject/bump-my-version)
 - **ML-ready** with optional dependency group, config pattern, notebooks, data, scripts, and DVC support
+- **[Conventional Commits](https://www.conventionalcommits.org/)** enforced on commit messages and PR titles
+- **Branch protection** recommended config with required status checks
 - **Issue templates** (bug report + feature request YAML forms) and **PR template** with checklist
 
 ## Quickstart
@@ -128,7 +130,9 @@ All recipes also work with plain `uv run` commands if you don't have `just` inst
 │   │   ├── ci.yml             # CI: lint, typecheck, test, coverage, audit
 │   │   ├── docs.yml           # Docs build and deploy to GitHub Pages
 │   │   ├── publish.yml        # Publish to PyPI on GitHub Release
-│   │   └── codeql.yml         # CodeQL security analysis
+│   │   ├── codeql.yml         # CodeQL security analysis
+│   │   ├── pr-title.yml       # Validate PR titles (conventional commits)
+│   │   └── commit-lint.yml    # Validate commit messages on PRs
 │   ├── CODEOWNERS             # Default PR reviewers
 │   ├── dependabot.yml         # Dependency update config
 │   └── pull_request_template.md
@@ -181,6 +185,53 @@ On every push to `main`, the docs workflow builds the MkDocs site and deploys it
 2. Under **Source**, select **GitHub Actions**
 
 The docs site will be available at `https://your-username.github.io/your-repo/`.
+
+### Standards enforcement
+
+Commit messages and PR titles are validated against [Conventional Commits](https://www.conventionalcommits.org/) format:
+
+```
+feat: add user authentication
+fix: resolve timeout in data loader
+docs: update API reference
+refactor: simplify config parsing
+test: add coverage for greet module
+```
+
+| Layer | Tool | Where |
+|---|---|---|
+| **Commit messages** (local) | [commitizen](https://commitizen-tools.github.io/commitizen/) pre-commit hook | Validates on `git commit` — rejects non-conventional messages |
+| **Commit messages** (CI) | `cz check` in `commit-lint.yml` | Validates all commits in a PR branch |
+| **PR titles** | [`action-semantic-pull-request`](https://github.com/amannn/action-semantic-pull-request) in `pr-title.yml` | Blocks merge if PR title doesn't match `type: description` format |
+| **Issues** | YAML form templates | Required fields, dropdowns — can't submit without filling them |
+
+Valid PR title types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
+
+### Branch protection
+
+The template recommends enabling branch protection on `main`:
+
+- **Required status checks**: lint, type-check, test (3.11/3.12/3.13), audit
+- **No force pushes** or branch deletion
+- **Up-to-date branches required** before merge
+
+To set up via CLI after `just init`:
+
+```bash
+gh api repos/OWNER/REPO/branches/main/protection -X PUT --input - <<'EOF'
+{
+  "required_status_checks": {
+    "strict": true,
+    "contexts": ["lint", "type-check", "test (3.11)", "test (3.12)", "test (3.13)", "audit"]
+  },
+  "enforce_admins": false,
+  "required_pull_request_reviews": null,
+  "restrictions": null,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
+EOF
+```
 
 ### Security scanning
 
@@ -449,6 +500,7 @@ Installed automatically with `uv sync --dev`:
 | mkdocs-material | >= 9.5 | Documentation site generator |
 | mkdocstrings[python] | >= 0.25 | Auto-generate API docs from docstrings |
 | pip-audit | >= 2.7 | Dependency vulnerability scanner |
+| commitizen | >= 4.1 | Conventional commit message validation |
 
 ### Build system
 
