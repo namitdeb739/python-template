@@ -1,5 +1,13 @@
 # python-template
 
+[![CI](https://github.com/namitdeb739/python-template/actions/workflows/ci.yml/badge.svg)](https://github.com/namitdeb739/python-template/actions/workflows/ci.yml)
+[![Docs](https://github.com/namitdeb739/python-template/actions/workflows/docs.yml/badge.svg)](https://namitdeb739.github.io/python-template/)
+[![CodeQL](https://github.com/namitdeb739/python-template/actions/workflows/codeql.yml/badge.svg)](https://github.com/namitdeb739/python-template/actions/workflows/codeql.yml)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
+
 A modern, batteries-included Python project template with [uv](https://docs.astral.sh/uv/), [ruff](https://docs.astral.sh/ruff/), and ML-ready structure. Click **"Use this template"** on GitHub to create a new repository from this template.
 
 ## Features
@@ -10,11 +18,17 @@ A modern, batteries-included Python project template with [uv](https://docs.astr
 - **[mypy](https://mypy.readthedocs.io/)** for static type checking (strict mode)
 - **[pre-commit](https://pre-commit.com/)** hooks for local code quality enforcement
 - **[just](https://github.com/casey/just)** task runner for one-command workflows (`just check`, `just fix`, `just docs`)
-- **GitHub Actions CI** with lint, type-check, and test jobs across Python 3.11–3.13
+- **GitHub Actions CI** with lint, type-check, test, coverage, and dependency audit jobs
+- **[CodeQL](https://codeql.github.com/)** security scanning and **[pip-audit](https://github.com/pypa/pip-audit)** dependency vulnerability checks
 - **[Dependabot](https://docs.github.com/en/code-security/dependabot)** for automated dependency updates
 - **[MkDocs Material](https://squidfunk.github.io/mkdocs-material/)** for documentation with GitHub Pages auto-deploy
-- **Docker** support with multi-stage build using uv
-- **ML-ready** with optional dependency group, notebooks directory, and data directory
+- **[Codecov](https://codecov.io/)** coverage reporting on PRs
+- **Docker** support with multi-stage build using uv (CPU and GPU variants)
+- **[Dev Containers](https://containers.dev/)** for GitHub Codespaces and VS Code one-click setup
+- **PyPI publishing** workflow with trusted publishers on GitHub Release
+- **Version bumping** via `just release` with [bump-my-version](https://github.com/callowayproject/bump-my-version)
+- **ML-ready** with optional dependency group, config pattern, notebooks, data, scripts, and DVC support
+- **Issue templates** (bug report + feature request YAML forms) and **PR template** with checklist
 
 ## Quickstart
 
@@ -63,8 +77,13 @@ The `justfile` provides shortcuts for all common workflows. Run `just` to see al
 | `just notebook` | Launch Jupyter notebook server |
 | `just docs` | Serve documentation locally |
 | `just docs-build` | Build documentation site |
+| `just audit` | Audit dependencies for vulnerabilities |
+| `just build` | Build package for distribution |
+| `just release patch` | Bump version, tag, and push (patch/minor/major) |
 | `just docker-build` | Build Docker image |
+| `just docker-build-gpu` | Build GPU Docker image |
 | `just docker-run` | Run in Docker |
+| `just dvc-init` | Initialize DVC for data versioning |
 | `just clean` | Remove build artifacts |
 
 All recipes also work with plain `uv run` commands if you don't have `just` installed.
@@ -76,7 +95,9 @@ All recipes also work with plain `uv run` commands if you don't have `just` inst
 ├── src/
 │   └── project_name/          # Source package (src layout)
 │       ├── __init__.py
-│       └── main.py            # Entry point
+│       ├── main.py            # Entry point
+│       ├── config.py          # Typed dataclass configuration
+│       └── py.typed           # PEP 561 type marker
 ├── tests/
 │   ├── __init__.py
 │   └── test_main.py           # Example test
@@ -87,19 +108,35 @@ All recipes also work with plain `uv run` commands if you don't have `just` inst
 │   └── changelog.md
 ├── notebooks/                 # Jupyter notebooks
 ├── data/                      # Data files (gitignored except .gitkeep)
+├── scripts/                   # Standalone scripts (data processing, training)
+├── .devcontainer/
+│   └── devcontainer.json      # GitHub Codespaces / VS Code dev container
 ├── .github/
+│   ├── ISSUE_TEMPLATE/        # Bug report + feature request YAML forms
 │   ├── workflows/
-│   │   ├── ci.yml             # CI pipeline (lint, typecheck, test)
-│   │   └── docs.yml           # Docs build and deploy to GitHub Pages
-│   └── dependabot.yml         # Dependency update config
+│   │   ├── ci.yml             # CI: lint, typecheck, test, coverage, audit
+│   │   ├── docs.yml           # Docs build and deploy to GitHub Pages
+│   │   ├── publish.yml        # Publish to PyPI on GitHub Release
+│   │   └── codeql.yml         # CodeQL security analysis
+│   ├── CODEOWNERS             # Default PR reviewers
+│   ├── dependabot.yml         # Dependency update config
+│   └── pull_request_template.md
+├── .vscode/
+│   ├── settings.json          # Editor config for ruff, mypy, pytest
+│   └── extensions.json        # Recommended extensions
 ├── justfile                   # Task runner recipes
 ├── mkdocs.yml                 # MkDocs configuration
 ├── .pre-commit-config.yaml    # Pre-commit hook config
+├── .editorconfig              # Cross-IDE formatting defaults
+├── .dvcignore                 # DVC exclusion patterns
+├── .env.example               # Template environment variables
 ├── pyproject.toml             # Project metadata, dependencies, tool config
-├── Dockerfile                 # Multi-stage container build
+├── Dockerfile                 # Multi-stage container build (CPU)
+├── Dockerfile.gpu             # CUDA-based container build (GPU)
 ├── docker-compose.yml         # Container orchestration
 ├── .python-version            # Pin Python version (3.11)
 ├── .gitignore                 # Python, data, IDE, OS ignores
+├── SECURITY.md                # Vulnerability disclosure policy
 ├── CONTRIBUTING.md            # Contributor quick-start
 ├── CHANGELOG.md               # Release history
 ├── LICENSE                    # MIT
@@ -114,13 +151,14 @@ The `src/` layout prevents accidental imports of the uninstalled package during 
 
 ### CI (`ci.yml`)
 
-The CI pipeline runs on every push to `main` and on pull requests targeting `main`. It consists of three parallel jobs:
+The CI pipeline runs on every push to `main` and on pull requests targeting `main`. It consists of four parallel jobs:
 
 | Job | What it does |
 |---|---|
 | **lint** | Runs `ruff check` and `ruff format --check` to enforce code style |
 | **type-check** | Runs `mypy` in strict mode against `src/` |
-| **test** | Runs `pytest` across a matrix of Python 3.11, 3.12, and 3.13 |
+| **test** | Runs `pytest` with coverage across Python 3.11, 3.12, and 3.13. Uploads coverage to Codecov on 3.12 |
+| **audit** | Runs `pip-audit` to check for known vulnerabilities in dependencies |
 
 All jobs use [`astral-sh/setup-uv`](https://github.com/astral-sh/setup-uv) to install uv with dependency caching.
 
@@ -132,6 +170,21 @@ On every push to `main`, the docs workflow builds the MkDocs site and deploys it
 2. Under **Source**, select **GitHub Actions**
 
 The docs site will be available at `https://your-username.github.io/your-repo/`.
+
+### Security scanning
+
+Two layers of security scanning are built in:
+
+- **CodeQL** (`codeql.yml`) — GitHub's semantic code analysis runs on push, PR, and weekly schedule. Catches injection vulnerabilities, hardcoded credentials, and other security anti-patterns.
+- **pip-audit** (`ci.yml` audit job) — checks all installed dependencies against the [Python Packaging Advisory Database](https://github.com/pypa/advisory-database) for known CVEs.
+
+### Publishing to PyPI (`publish.yml`)
+
+The publish workflow triggers on GitHub Releases and uses [trusted publishers](https://docs.pypi.org/trusted-publishers/) (no API tokens needed). To set up:
+
+1. Go to [pypi.org](https://pypi.org) → your project → Publishing → Add a new publisher
+2. Enter: GitHub repo `your-username/your-repo`, workflow `publish.yml`, environment `pypi`
+3. Create a GitHub Release — the workflow builds with `uv build` and publishes automatically
 
 ### Dependabot (`dependabot.yml`)
 
@@ -248,6 +301,56 @@ The `Dockerfile` uses a multi-stage build optimized for fast rebuilds:
 
 The `docker-compose.yml` mounts the `data/` directory as a volume and sets `PYTHONUNBUFFERED=1` for real-time log output.
 
+### GPU support
+
+A separate `Dockerfile.gpu` is included for ML workloads requiring CUDA:
+
+```bash
+just docker-build-gpu    # or: docker build -f Dockerfile.gpu -t project-name-gpu .
+```
+
+This uses `nvidia/cuda:12.4.1-runtime-ubuntu22.04` as the base image and installs the `[ml]` extras automatically.
+
+## Dev Containers
+
+The `.devcontainer/devcontainer.json` provides a one-click development environment for [GitHub Codespaces](https://github.com/features/codespaces) and [VS Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers).
+
+**What's included:**
+- Python 3.12 base image
+- uv, just, and GitHub CLI pre-installed
+- All dev dependencies synced automatically
+- Pre-commit hooks installed
+- VS Code extensions auto-installed (ruff, mypy, Python, Jupyter, TOML, EditorConfig)
+- Port 8000 forwarded for MkDocs preview
+
+**To use:** Click "Open in GitHub Codespaces" on the repo page, or open the repo in VS Code and select "Reopen in Container".
+
+## VS Code
+
+The `.vscode/` directory includes recommended settings and extensions:
+
+- **Format on save** with ruff
+- **Organize imports** on save
+- **Pytest** as the test runner
+- **88-char ruler** matching the ruff line length
+- **Recommended extensions**: Python, mypy, ruff, Jupyter, TOML, EditorConfig
+
+VS Code will prompt to install recommended extensions when you first open the repo.
+
+## Releasing
+
+### Version bumping
+
+The template uses [bump-my-version](https://github.com/callowayproject/bump-my-version) to keep version numbers in sync across `pyproject.toml` and `src/project_name/__init__.py`:
+
+```bash
+just release patch    # 0.1.0 → 0.1.1
+just release minor    # 0.1.0 → 0.2.0
+just release major    # 0.1.0 → 1.0.0
+```
+
+This runs all checks first, bumps the version, creates a git commit and tag, and pushes. Create a GitHub Release from the tag to trigger the PyPI publish workflow.
+
 ## ML dependencies
 
 The template includes an optional `[ml]` dependency group in `pyproject.toml` with common ML libraries commented out:
@@ -261,6 +364,7 @@ ml = [
     # "matplotlib>=3.9",
     # "torch>=2.3",
     # "transformers>=4.40",
+    # "dvc>=3.50",
 ]
 ```
 
@@ -270,7 +374,46 @@ Uncomment the ones you need, then install:
 uv sync --extra ml
 ```
 
-The `notebooks/` directory is included for Jupyter notebooks, and `data/` is for datasets. Data files (`.csv`, `.parquet`, `.pkl`, `.h5`, `.pt`, `.onnx`, `.safetensors`) are gitignored by default to prevent accidentally committing large files.
+### Project layout for ML
+
+| Directory | Purpose |
+|---|---|
+| `notebooks/` | Jupyter notebooks for exploration and prototyping |
+| `data/` | Datasets (gitignored by default — use DVC for versioning) |
+| `scripts/` | Standalone scripts for data processing, training, evaluation |
+| `src/project_name/config.py` | Typed dataclass configuration (see below) |
+
+### Configuration
+
+`src/project_name/config.py` provides a typed, dataclass-based config pattern:
+
+```python
+from project_name.config import Config
+
+config = Config(seed=42, data_dir="data/processed")
+```
+
+This is intentionally tracker-agnostic — works with W&B, MLflow, or plain Python. Commented fields for learning rate, batch size, epochs, and experiment tracking are included as starting points.
+
+### Environment variables
+
+Copy `.env.example` to `.env` and fill in your API keys:
+
+```bash
+cp .env.example .env
+```
+
+Template includes placeholders for W&B, MLflow, HuggingFace, AWS, GCS, and DVC remotes.
+
+### Data versioning (DVC)
+
+To initialize [DVC](https://dvc.org/) for data versioning:
+
+```bash
+just dvc-init    # or: uv run dvc init && uv run dvc config core.autostage true
+```
+
+A `.dvcignore` file is included to exclude build artifacts from DVC tracking. Data files (`.csv`, `.parquet`, `.pkl`, `.h5`, `.pt`, `.onnx`, `.safetensors`) are gitignored by default.
 
 ## Dependencies
 
@@ -287,6 +430,7 @@ Installed automatically with `uv sync --dev`:
 | pre-commit | >= 3.7 | Git hook framework |
 | jupyter | >= 1.0 | Notebook environment |
 | mkdocs-material | >= 9.5 | Documentation site generator |
+| pip-audit | >= 2.7 | Dependency vulnerability scanner |
 
 ### Build system
 
@@ -296,16 +440,21 @@ Uses [Hatchling](https://hatch.pypa.io/) as the build backend, configured to pac
 
 After creating a new repo from this template:
 
-1. **Rename the package**: Replace `project_name` (directory under `src/`) and `project-name` (in `pyproject.toml`) with your actual project name
+1. **Rename the package**: Replace `project_name` (directory under `src/`) and `project-name` (in `pyproject.toml`, `justfile`, `Dockerfile`, `Dockerfile.gpu`) with your actual project name
 2. **Update metadata**: Edit `[project]` in `pyproject.toml` — name, version, description, license
-3. **Update the README**: Replace this content with your project's documentation
+3. **Update the README**: Replace this content with your project's documentation. Update badge URLs to point to your repo
 4. **Update the LICENSE**: Change the copyright holder
-5. **Add dependencies**: Add your runtime dependencies to `[project] dependencies` in `pyproject.toml`
-6. **Enable ML extras**: Uncomment libraries in `[project.optional-dependencies.ml]` as needed
-7. **Update docs config**: Edit `mkdocs.yml` — `site_name`, `repo_url`, `repo_name`
-8. **Update CONTRIBUTING.md**: Replace the GitHub Pages URL with your actual docs URL
-9. **Enable GitHub Pages**: Go to Settings > Pages > Source > GitHub Actions
-10. **Generate lockfile**: Run `uv lock` to create `uv.lock` (committed to the repo for reproducible builds)
+5. **Update SECURITY.md**: Replace the email address with your security contact
+6. **Update `.github/CODEOWNERS`**: Replace `@your-username` with your GitHub username or team
+7. **Add dependencies**: Add your runtime dependencies to `[project] dependencies` in `pyproject.toml`
+8. **Enable ML extras**: Uncomment libraries in `[project.optional-dependencies.ml]` as needed
+9. **Update docs config**: Edit `mkdocs.yml` — `site_name`, `repo_url`, `repo_name`
+10. **Update CONTRIBUTING.md**: Replace the GitHub Pages URL with your actual docs URL
+11. **Enable GitHub Pages**: Go to Settings > Pages > Source > GitHub Actions
+12. **Set up Codecov**: Connect your repo at [codecov.io](https://codecov.io/) (free for public repos)
+13. **Set up PyPI publishing**: Add trusted publisher at [pypi.org](https://pypi.org/) (see [Releasing](#releasing))
+14. **Set up `.env`**: Copy `.env.example` to `.env` and fill in your API keys
+15. **Generate lockfile**: Run `uv lock` to create `uv.lock` (committed to the repo for reproducible builds)
 
 ## License
 

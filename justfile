@@ -52,6 +52,31 @@ docker-build:
 docker-run:
     docker compose up
 
+# Audit dependencies for vulnerabilities
+audit:
+    uv run pip-audit
+
+# Build package
+build:
+    uv build
+
+# Bump version, create git tag, and push (usage: just release patch|minor|major)
+release bump:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    just check
+    uvx bump-my-version bump {{ bump }}
+    git push --follow-tags
+
+# Build GPU Docker image
+docker-build-gpu:
+    docker build -f Dockerfile.gpu -t project-name-gpu .
+
+# Initialize DVC (run once)
+dvc-init:
+    uv run dvc init
+    uv run dvc config core.autostage true
+
 # Clean build artifacts
 clean:
     rm -rf dist/ build/ site/ .pytest_cache/ .mypy_cache/ .ruff_cache/ htmlcov/

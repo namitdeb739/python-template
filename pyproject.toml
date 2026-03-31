@@ -16,6 +16,7 @@ dev = [
     "jupyter>=1.0",
     "ruff>=0.5",
     "mkdocs-material>=9.5",
+    "pip-audit>=2.7",
 ]
 
 [project.optional-dependencies]
@@ -27,6 +28,7 @@ ml = [
     # "matplotlib>=3.9",
     # "torch>=2.3",
     # "transformers>=4.40",
+    # "dvc>=3.50",
 ]
 
 [project.scripts]
@@ -71,3 +73,18 @@ mypy_path = "src"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.bumpversion]
+current_version = "0.1.0"
+commit = true
+tag = true
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "src/project_name/__init__.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'

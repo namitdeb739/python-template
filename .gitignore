@@ -15,8 +15,8 @@ env/
 # uv
 uv.lock
 
-# IDE
-.vscode/
+# IDE (keep .vscode/ tracked for shared settings)
+# .vscode/
 .idea/
 *.swp
 *.swo

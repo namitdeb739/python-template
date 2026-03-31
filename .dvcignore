@@ -1,0 +1,11 @@
+# DVC ignore file — patterns here are excluded from DVC tracking
+.git
+.venv
+__pycache__
+.pytest_cache
+.mypy_cache
+.ruff_cache
+site/
+dist/
+build/
+*.egg-info

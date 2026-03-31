@@ -40,4 +40,20 @@ jobs:
           version: "latest"
           python-version: ${{ matrix.python-version }}
       - run: uv sync --dev
-      - run: uv run pytest -v
+      - run: uv run pytest -v --cov=project_name --cov-report=xml
+      - name: Upload coverage to Codecov
+        if: matrix.python-version == '3.12'
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage.xml
+          fail_ci_if_not_found: false
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+      - run: uv sync --dev
+      - run: uv run pip-audit
