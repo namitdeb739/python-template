@@ -47,13 +47,23 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 ### Setup
 
+1. Click **"Use this template"** on GitHub to create your repo
+2. Clone it and run the interactive setup:
+
 ```bash
 git clone https://github.com/your-username/your-repo.git
 cd your-repo
-just setup    # or: uv sync --dev && uv run pre-commit install
+just init
 ```
 
-This creates a virtual environment in `.venv/`, installs all dev dependencies, and configures pre-commit hooks.
+This prompts for your project name, description, author, and GitHub username, then automatically:
+- Renames the package directory and all references
+- Updates badges, CODEOWNERS, LICENSE, and docs config
+- Locks and installs dependencies
+- Sets up pre-commit hooks
+- Optionally initializes DVC and `.env`
+
+Already set up? Use `just setup` to reinstall deps and hooks.
 
 ### Run
 
@@ -67,6 +77,7 @@ The `justfile` provides shortcuts for all common workflows. Run `just` to see al
 
 | Recipe | Description |
 |---|---|
+| `just init` | **Interactive project setup** (run once after cloning from template) |
 | `just setup` | Install deps and set up pre-commit hooks |
 | `just check` | Run all checks — lint, typecheck, test (mirrors CI) |
 | `just lint` | Check linting and formatting |
@@ -438,23 +449,21 @@ Uses [Hatchling](https://hatch.pypa.io/) as the build backend, configured to pac
 
 ## Customizing the template
 
-After creating a new repo from this template:
+### Automated (recommended)
 
-1. **Rename the package**: Replace `project_name` (directory under `src/`) and `project-name` (in `pyproject.toml`, `justfile`, `Dockerfile`, `Dockerfile.gpu`) with your actual project name
-2. **Update metadata**: Edit `[project]` in `pyproject.toml` — name, version, description, license
-3. **Update the README**: Replace this content with your project's documentation. Update badge URLs to point to your repo
-4. **Update the LICENSE**: Change the copyright holder
-5. **Update SECURITY.md**: Replace the email address with your security contact
-6. **Update `.github/CODEOWNERS`**: Replace `@your-username` with your GitHub username or team
-7. **Add dependencies**: Add your runtime dependencies to `[project] dependencies` in `pyproject.toml`
-8. **Enable ML extras**: Uncomment libraries in `[project.optional-dependencies.ml]` as needed
-9. **Update docs config**: Edit `mkdocs.yml` — `site_name`, `repo_url`, `repo_name`
-10. **Update CONTRIBUTING.md**: Replace the GitHub Pages URL with your actual docs URL
-11. **Enable GitHub Pages**: Go to Settings > Pages > Source > GitHub Actions
-12. **Set up Codecov**: Connect your repo at [codecov.io](https://codecov.io/) (free for public repos)
-13. **Set up PyPI publishing**: Add trusted publisher at [pypi.org](https://pypi.org/) (see [Releasing](#releasing))
-14. **Set up `.env`**: Copy `.env.example` to `.env` and fill in your API keys
-15. **Generate lockfile**: Run `uv lock` to create `uv.lock` (committed to the repo for reproducible builds)
+Run `just init` after cloning — it handles steps 1–6 interactively:
+
+```bash
+just init
+```
+
+### Manual steps (after `just init` or if you prefer manual setup)
+
+1. **Add dependencies**: Add your runtime dependencies to `[project] dependencies` in `pyproject.toml`
+2. **Enable ML extras**: Uncomment libraries in `[project.optional-dependencies.ml]` as needed
+3. **Enable GitHub Pages**: Go to Settings > Pages > Source > GitHub Actions
+4. **Set up Codecov**: Connect your repo at [codecov.io](https://codecov.io/) (free for public repos)
+5. **Set up PyPI publishing**: Add trusted publisher at [pypi.org](https://pypi.org/) (see [Releasing](#releasing))
 
 ## License
 

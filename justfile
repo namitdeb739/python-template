@@ -2,6 +2,10 @@
 default:
     @just --list
 
+# Interactive project setup (run once after cloning from template)
+init:
+    bash scripts/init.sh
+
 # Install dependencies and set up dev environment
 setup:
     uv sync --dev
