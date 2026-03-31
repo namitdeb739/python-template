@@ -121,6 +121,32 @@ uv run pre-commit install
 echo -e "  ${GREEN}✓${NC} Dependencies locked and installed"
 echo -e "  ${GREEN}✓${NC} Pre-commit hooks installed"
 
+# --- Branch protection ---
+
+if command -v gh &>/dev/null && gh auth status &>/dev/null 2>&1; then
+    REPO="${GITHUB_USER}/${PROJECT_NAME}"
+    gh api "repos/${REPO}/branches/main/protection" -X PUT --silent --input - <<BPEOF 2>/dev/null
+{
+  "required_status_checks": {
+    "strict": true,
+    "contexts": ["lint", "type-check", "test (3.11)", "test (3.12)", "test (3.13)", "audit", "validate"]
+  },
+  "enforce_admins": false,
+  "required_pull_request_reviews": null,
+  "restrictions": null,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
+BPEOF
+    if [[ $? -eq 0 ]]; then
+        echo -e "  ${GREEN}✓${NC} Branch protection enabled on main"
+    else
+        echo "  ⚠ Could not set branch protection (check gh auth permissions)"
+    fi
+else
+    echo "  ⚠ gh CLI not found or not authenticated — set up branch protection manually"
+fi
+
 # --- Self-destruct option ---
 
 echo ""
