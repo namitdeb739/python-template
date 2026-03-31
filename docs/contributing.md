@@ -21,22 +21,80 @@
 
 ## Code style
 
-- **Formatting**: handled by [ruff](https://docs.astral.sh/ruff/) (88 char line length, black-compatible)
-- **Linting**: ruff with pycodestyle, pyflakes, isort, bugbear, and more (see `pyproject.toml`)
-- **Type checking**: [mypy](https://mypy.readthedocs.io/) in strict mode — all functions must have type annotations
-- **Auto-fix**: run `just fix` to auto-fix lint and formatting issues
+### Formatting and linting
+
+[Ruff](https://docs.astral.sh/ruff/) handles both formatting and linting. It enforces:
+
+- **88-character line length** (black-compatible)
+- **isort-compatible import ordering**
+- **pycodestyle, pyflakes, bugbear, and more** (see `pyproject.toml` for the full rule set)
+
+Run `just fix` to auto-fix issues, or let pre-commit handle it on commit.
+
+### Type annotations
+
+[Mypy](https://mypy.readthedocs.io/) runs in **strict mode**. All functions must have complete type annotations:
+
+```python
+# Good
+def process(items: list[str], *, verbose: bool = False) -> int: ...
+
+# Bad — mypy strict will reject this
+def process(items, verbose=False): ...
+```
+
+### Docstrings
+
+Use **[Google-style docstrings](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings)**. These are auto-rendered as API docs by [mkdocstrings](https://mkdocstrings.github.io/).
+
+```python
+def fetch_data(url: str, timeout: float = 30.0) -> bytes:
+    """Fetch raw data from a URL.
+
+    Args:
+        url: The URL to fetch from.
+        timeout: Request timeout in seconds.
+
+    Returns:
+        The response body as bytes.
+
+    Raises:
+        ConnectionError: If the request fails.
+    """
+```
 
 ## Testing
 
 - Tests live in `tests/` and are run with [pytest](https://docs.pytest.org/)
+- Shared fixtures go in `tests/conftest.py`
 - Run `just test` to execute the full suite
 - Run `just test -k test_name` to run specific tests
 - Run `just coverage` for a coverage report
+- CI runs tests across Python 3.11, 3.12, and 3.13
+
+## Documentation
+
+Docs are built with [MkDocs Material](https://squidfunk.github.io/mkdocs-material/) and auto-deploy to GitHub Pages on merge to `main`.
+
+```bash
+just docs    # preview locally at http://127.0.0.1:8000/
+```
+
+- Prose documentation goes in `docs/`
+- API reference is auto-generated from docstrings (see `docs/api.md`)
+- Add new pages to the `nav` section in `mkdocs.yml`
 
 ## Commit messages
 
-Use clear, descriptive commit messages. Prefer the imperative mood:
+Use clear, descriptive commit messages in the imperative mood:
 
 - "Add user authentication endpoint"
 - "Fix off-by-one error in pagination"
 - "Remove deprecated config loader"
+
+## Pull request process
+
+1. Fill out the PR template (summary, changes, checklist)
+2. Ensure `just check` passes (CI will verify)
+3. Request review from a CODEOWNERS member
+4. Squash-merge once approved

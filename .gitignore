@@ -12,8 +12,7 @@ build/
 venv/
 env/
 
-# uv
-uv.lock
+# uv.lock is committed for reproducible builds — do not gitignore
 
 # IDE (keep .vscode/ tracked for shared settings)
 # .vscode/
@@ -32,6 +31,9 @@ htmlcov/
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Output
+output/
 
 # Data files
 *.csv

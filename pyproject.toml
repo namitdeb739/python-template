@@ -16,6 +16,7 @@ dev = [
     "jupyter>=1.0",
     "ruff>=0.5",
     "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.25",
     "pip-audit>=2.7",
 ]
 

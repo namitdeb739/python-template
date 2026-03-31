@@ -12,6 +12,14 @@ NC='\033[0m' # No Color
 echo -e "${BOLD}🚀 Project Setup${NC}"
 echo ""
 
+# --- Detect platform for sed compatibility ---
+
+if [[ "$(uname)" == "Darwin" ]]; then
+    sedi() { sed -i '' "$@"; }
+else
+    sedi() { sed -i "$@"; }
+fi
+
 # --- Prompts ---
 
 read -rp "Project name (kebab-case, e.g. my-ml-project): " PROJECT_NAME
@@ -45,12 +53,15 @@ fi
 
 # --- Find and replace across all files ---
 
-# Files to update (skip .git, binary files, and this script itself)
 find_and_replace() {
     local old="$1"
     local new="$2"
-    # Use git ls-files to only touch tracked files
-    git ls-files -z | xargs -0 sed -i "s|${old}|${new}|g" 2>/dev/null || true
+    # Use git ls-files to only touch tracked text files
+    while IFS= read -r -d '' file; do
+        if file --brief "$file" | grep -q text; then
+            sedi "s|${old}|${new}|g" "$file" 2>/dev/null || true
+        fi
+    done < <(git ls-files -z)
 }
 
 find_and_replace "project-name" "$PROJECT_NAME"
@@ -66,17 +77,16 @@ echo -e "  ${GREEN}✓${NC} Updated project references across all files"
 
 # --- Update pyproject.toml author ---
 
-# Add authors field if not present
 if ! grep -q "authors" pyproject.toml; then
-    sed -i "/^description/a authors = [{name = \"${AUTHOR_NAME}\", email = \"${AUTHOR_EMAIL}\"}]" pyproject.toml
+    sedi "/^description/a\\
+authors = [{name = \"${AUTHOR_NAME}\", email = \"${AUTHOR_EMAIL}\"}]" pyproject.toml
     echo -e "  ${GREEN}✓${NC} Added author to pyproject.toml"
 fi
 
 # --- Update LICENSE copyright ---
 
 YEAR=$(date +%Y)
-sed -i "s/Copyright (c) [0-9]* project-name contributors/Copyright (c) ${YEAR} ${AUTHOR_NAME}/" LICENSE 2>/dev/null || true
-sed -i "s/Copyright (c) [0-9]* ${PROJECT_NAME} contributors/Copyright (c) ${YEAR} ${AUTHOR_NAME}/" LICENSE 2>/dev/null || true
+sedi "s/Copyright (c) [0-9]* ${PROJECT_NAME} contributors/Copyright (c) ${YEAR} ${AUTHOR_NAME}/" LICENSE 2>/dev/null || true
 echo -e "  ${GREEN}✓${NC} Updated LICENSE copyright"
 
 # --- Optional: DVC ---

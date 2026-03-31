@@ -275,6 +275,7 @@ This starts a local server at `http://127.0.0.1:8000/` with live reload — edit
 | `mkdocs.yml` | Site config — theme, navigation, extensions |
 | `docs/index.md` | Home page |
 | `docs/getting-started.md` | Installation and usage guide |
+| `docs/api.md` | API reference (auto-generated from docstrings) |
 | `docs/contributing.md` | Full contributor guide |
 | `docs/changelog.md` | Release history |
 
@@ -288,10 +289,15 @@ This starts a local server at `http://127.0.0.1:8000/` with live reload — edit
 
 The template enables several useful MkDocs Material extensions out of the box:
 
+- **[mkdocstrings](https://mkdocstrings.github.io/)** — auto-generate API docs from Google-style docstrings
 - **Admonitions** — callout boxes (`!!! note`, `!!! warning`, etc.)
 - **Code highlighting** — syntax highlighting with line numbers and copy button
 - **Tabbed content** — tabbed code examples for multi-language/multi-platform docs
 - **Table of contents** — auto-generated with permalink anchors
+
+### Docstring convention
+
+Use **[Google-style docstrings](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings)** — they render automatically as API documentation via mkdocstrings. See `docs/api.md` and the [Contributing guide](docs/contributing.md) for examples.
 
 ## Docker
 
@@ -441,6 +447,7 @@ Installed automatically with `uv sync --dev`:
 | pre-commit | >= 3.7 | Git hook framework |
 | jupyter | >= 1.0 | Notebook environment |
 | mkdocs-material | >= 9.5 | Documentation site generator |
+| mkdocstrings[python] | >= 0.25 | Auto-generate API docs from docstrings |
 | pip-audit | >= 2.7 | Dependency vulnerability scanner |
 
 ### Build system
