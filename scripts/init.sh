@@ -151,8 +151,12 @@ BPEOF
     if gh api "repos/${REPO}/pages" -X POST -f build_type=workflow --silent 2>/dev/null; then
         echo -e "  ${GREEN}✓${NC} GitHub Pages enabled (Actions source)"
     else
-        # Pages may already be enabled, or the repo might not support it
         echo "  ⚠ Could not enable GitHub Pages (may already be enabled, or enable manually in Settings > Pages)"
+    fi
+
+    # Set repo description and topics
+    if gh repo edit "${REPO}" --description "${DESCRIPTION}" 2>/dev/null; then
+        echo -e "  ${GREEN}✓${NC} Repository description set"
     fi
 else
     echo "  ⚠ gh CLI not found or not authenticated — set up branch protection and GitHub Pages manually"

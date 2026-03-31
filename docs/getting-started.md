@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
-- **Python 3.11+** — check with `python --version`
-- **[uv](https://docs.astral.sh/uv/getting-started/installation/)** — fast Python package manager
-- **[just](https://github.com/casey/just#installation)** — task runner (optional but recommended)
+- **Python 3.11+**: check with `python --version`
+- **[uv](https://docs.astral.sh/uv/getting-started/installation/)**: fast Python package manager
+- **[just](https://github.com/casey/just#installation)**: task runner (optional but recommended)
 
 ## Creating a new project
 
@@ -78,7 +78,7 @@ just coverage                   # with coverage report
 
 ### Type annotations
 
-All code must have type annotations — mypy runs in strict mode. Use [Google-style docstrings](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings) for documentation:
+All code must have type annotations: mypy runs in strict mode. Use [Google-style docstrings](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings) for documentation:
 
 ```python
 def process_data(path: Path, *, normalize: bool = True) -> pd.DataFrame:

@@ -16,7 +16,7 @@
 1. Create a branch from `main`
 2. Make your changes
 3. Run `just check` to verify lint, type checking, and tests all pass
-4. Commit — pre-commit hooks will auto-fix formatting and catch lint issues
+4. Commit: pre-commit hooks will auto-fix formatting and catch lint issues
 5. Open a pull request against `main`
 
 ## Code style
@@ -39,7 +39,7 @@ Run `just fix` to auto-fix issues, or let pre-commit handle it on commit.
 # Good
 def process(items: list[str], *, verbose: bool = False) -> int: ...
 
-# Bad — mypy strict will reject this
+# Bad: mypy strict will reject this
 def process(items, verbose=False): ...
 ```
 
