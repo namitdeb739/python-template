@@ -1,0 +1,69 @@
+[project]
+name = "project-name"
+version = "0.1.0"
+description = "A short description of your project"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "mypy>=1.10",
+    "pre-commit>=3.7",
+    "jupyter>=1.0",
+    "ruff>=0.5",
+]
+ml = [
+    # Uncomment the libraries you need:
+    # "numpy>=1.26",
+    # "pandas>=2.2",
+    # "scikit-learn>=1.5",
+    # "matplotlib>=3.9",
+    # "torch>=2.3",
+    # "transformers>=4.40",
+]
+
+[project.scripts]
+project-name = "project_name.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.backends"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/project_name"]
+
+[tool.ruff]
+target-version = "py311"
+src = ["src"]
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "SIM",  # flake8-simplify
+    "TCH",  # flake8-type-checking
+    "RUF",  # ruff-specific rules
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["project_name"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+mypy_path = "src"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
