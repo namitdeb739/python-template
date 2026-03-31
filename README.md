@@ -9,8 +9,10 @@ A modern, batteries-included Python project template with [uv](https://docs.astr
 - **[pytest](https://docs.pytest.org/)** for testing
 - **[mypy](https://mypy.readthedocs.io/)** for static type checking (strict mode)
 - **[pre-commit](https://pre-commit.com/)** hooks for local code quality enforcement
+- **[just](https://github.com/casey/just)** task runner for one-command workflows (`just check`, `just fix`, `just docs`)
 - **GitHub Actions CI** with lint, type-check, and test jobs across Python 3.11–3.13
 - **[Dependabot](https://docs.github.com/en/code-security/dependabot)** for automated dependency updates
+- **[MkDocs Material](https://squidfunk.github.io/mkdocs-material/)** for documentation with GitHub Pages auto-deploy
 - **Docker** support with multi-stage build using uv
 - **ML-ready** with optional dependency group, notebooks directory, and data directory
 
@@ -18,7 +20,8 @@ A modern, batteries-included Python project template with [uv](https://docs.astr
 
 ### Prerequisites
 
-Install [uv](https://docs.astral.sh/uv/getting-started/installation/):
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) — package manager
+- [just](https://github.com/casey/just#installation) — task runner (optional but recommended)
 
 ```bash
 # macOS / Linux
@@ -33,10 +36,10 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 ```bash
 git clone https://github.com/your-username/your-repo.git
 cd your-repo
-uv sync --dev
+just setup    # or: uv sync --dev && uv run pre-commit install
 ```
 
-This creates a virtual environment in `.venv/` and installs all dev dependencies (pytest, mypy, ruff, pre-commit, jupyter).
+This creates a virtual environment in `.venv/`, installs all dev dependencies, and configures pre-commit hooks.
 
 ### Run
 
@@ -44,40 +47,61 @@ This creates a virtual environment in `.venv/` and installs all dev dependencies
 uv run project-name
 ```
 
-### Common commands
+### Task runner (`just`)
 
-| Command | Description |
+The `justfile` provides shortcuts for all common workflows. Run `just` to see all available recipes:
+
+| Recipe | Description |
 |---|---|
-| `uv run pytest -v` | Run tests |
-| `uv run ruff check src/ tests/` | Lint code |
-| `uv run ruff format src/ tests/` | Format code |
-| `uv run ruff check --fix src/ tests/` | Lint and auto-fix |
-| `uv run mypy src/` | Type check |
-| `uv run jupyter notebook` | Launch Jupyter |
+| `just setup` | Install deps and set up pre-commit hooks |
+| `just check` | Run all checks — lint, typecheck, test (mirrors CI) |
+| `just lint` | Check linting and formatting |
+| `just fix` | Auto-fix lint and formatting issues |
+| `just typecheck` | Run mypy type checking |
+| `just test` | Run tests (`just test -k foo` for specific tests) |
+| `just coverage` | Run tests with coverage report |
+| `just notebook` | Launch Jupyter notebook server |
+| `just docs` | Serve documentation locally |
+| `just docs-build` | Build documentation site |
+| `just docker-build` | Build Docker image |
+| `just docker-run` | Run in Docker |
+| `just clean` | Remove build artifacts |
+
+All recipes also work with plain `uv run` commands if you don't have `just` installed.
 
 ## Project structure
 
 ```
 .
 ├── src/
-│   └── project_name/        # Source package (src layout)
+│   └── project_name/          # Source package (src layout)
 │       ├── __init__.py
-│       └── main.py           # Entry point
+│       └── main.py            # Entry point
 ├── tests/
 │   ├── __init__.py
-│   └── test_main.py          # Example test
+│   └── test_main.py           # Example test
+├── docs/                      # MkDocs documentation source
+│   ├── index.md
+│   ├── getting-started.md
+│   ├── contributing.md
+│   └── changelog.md
 ├── notebooks/                 # Jupyter notebooks
 ├── data/                      # Data files (gitignored except .gitkeep)
 ├── .github/
 │   ├── workflows/
-│   │   └── ci.yml             # CI pipeline
+│   │   ├── ci.yml             # CI pipeline (lint, typecheck, test)
+│   │   └── docs.yml           # Docs build and deploy to GitHub Pages
 │   └── dependabot.yml         # Dependency update config
+├── justfile                   # Task runner recipes
+├── mkdocs.yml                 # MkDocs configuration
 ├── .pre-commit-config.yaml    # Pre-commit hook config
 ├── pyproject.toml             # Project metadata, dependencies, tool config
 ├── Dockerfile                 # Multi-stage container build
 ├── docker-compose.yml         # Container orchestration
 ├── .python-version            # Pin Python version (3.11)
 ├── .gitignore                 # Python, data, IDE, OS ignores
+├── CONTRIBUTING.md            # Contributor quick-start
+├── CHANGELOG.md               # Release history
 ├── LICENSE                    # MIT
 └── README.md
 ```
@@ -88,7 +112,7 @@ The `src/` layout prevents accidental imports of the uninstalled package during 
 
 ## CI/CD
 
-### GitHub Actions (`ci.yml`)
+### CI (`ci.yml`)
 
 The CI pipeline runs on every push to `main` and on pull requests targeting `main`. It consists of three parallel jobs:
 
@@ -99,6 +123,15 @@ The CI pipeline runs on every push to `main` and on pull requests targeting `mai
 | **test** | Runs `pytest` across a matrix of Python 3.11, 3.12, and 3.13 |
 
 All jobs use [`astral-sh/setup-uv`](https://github.com/astral-sh/setup-uv) to install uv with dependency caching.
+
+### Docs deploy (`docs.yml`)
+
+On every push to `main`, the docs workflow builds the MkDocs site and deploys it to GitHub Pages. To enable this:
+
+1. Go to **Settings > Pages** in your GitHub repo
+2. Under **Source**, select **GitHub Actions**
+
+The docs site will be available at `https://your-username.github.io/your-repo/`.
 
 ### Dependabot (`dependabot.yml`)
 
@@ -159,6 +192,43 @@ Mypy is configured in strict mode (`pyproject.toml` under `[tool.mypy]`), which 
 
 The `mypy_path` is set to `src` so imports resolve correctly with the src layout.
 
+## Documentation
+
+Documentation is built with [MkDocs Material](https://squidfunk.github.io/mkdocs-material/) and lives in the `docs/` directory.
+
+### Local preview
+
+```bash
+just docs    # or: uv run mkdocs serve
+```
+
+This starts a local server at `http://127.0.0.1:8000/` with live reload — edits to `docs/` are reflected immediately.
+
+### Structure
+
+| File | Purpose |
+|---|---|
+| `mkdocs.yml` | Site config — theme, navigation, extensions |
+| `docs/index.md` | Home page |
+| `docs/getting-started.md` | Installation and usage guide |
+| `docs/contributing.md` | Full contributor guide |
+| `docs/changelog.md` | Release history |
+
+### Adding pages
+
+1. Create a new `.md` file in `docs/`
+2. Add it to the `nav` section in `mkdocs.yml`
+3. Push to `main` — the docs deploy workflow publishes automatically
+
+### Enabled extensions
+
+The template enables several useful MkDocs Material extensions out of the box:
+
+- **Admonitions** — callout boxes (`!!! note`, `!!! warning`, etc.)
+- **Code highlighting** — syntax highlighting with line numbers and copy button
+- **Tabbed content** — tabbed code examples for multi-language/multi-platform docs
+- **Table of contents** — auto-generated with permalink anchors
+
 ## Docker
 
 ### Build and run
@@ -211,10 +281,12 @@ Installed automatically with `uv sync --dev`:
 | Package | Version | Purpose |
 |---|---|---|
 | pytest | >= 8.0 | Test runner |
+| pytest-cov | >= 5.0 | Coverage reporting |
 | mypy | >= 1.10 | Static type checker |
 | ruff | >= 0.5 | Linter and formatter |
 | pre-commit | >= 3.7 | Git hook framework |
 | jupyter | >= 1.0 | Notebook environment |
+| mkdocs-material | >= 9.5 | Documentation site generator |
 
 ### Build system
 
@@ -230,7 +302,10 @@ After creating a new repo from this template:
 4. **Update the LICENSE**: Change the copyright holder
 5. **Add dependencies**: Add your runtime dependencies to `[project] dependencies` in `pyproject.toml`
 6. **Enable ML extras**: Uncomment libraries in `[project.optional-dependencies.ml]` as needed
-7. **Generate lockfile**: Run `uv lock` to create `uv.lock` (committed to the repo for reproducible builds)
+7. **Update docs config**: Edit `mkdocs.yml` — `site_name`, `repo_url`, `repo_name`
+8. **Update CONTRIBUTING.md**: Replace the GitHub Pages URL with your actual docs URL
+9. **Enable GitHub Pages**: Go to Settings > Pages > Source > GitHub Actions
+10. **Generate lockfile**: Run `uv lock` to create `uv.lock` (committed to the repo for reproducible builds)
 
 ## License
 

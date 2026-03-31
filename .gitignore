@@ -21,6 +21,9 @@ uv.lock
 *.swp
 *.swo
 
+# Docs
+site/
+
 # Testing
 .pytest_cache/
 .mypy_cache/
