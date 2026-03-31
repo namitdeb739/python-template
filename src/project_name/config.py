@@ -34,10 +34,10 @@ class Config:
     # device: str = "auto"
 
     # Experiment tracking (uncomment for your tracker)
+    # Note: tags needs `from dataclasses import field`
     # experiment_name: str = "default"
     # run_name: str | None = None
-    # tags: list[str] = field(default_factory=list)  # noqa: E501
-    # ^ requires: from dataclasses import field
+    # tags: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         self.data_dir = Path(self.data_dir)
