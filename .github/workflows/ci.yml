@@ -46,7 +46,6 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           files: coverage.xml
-          fail_ci_if_not_found: false
 
   audit:
     runs-on: ubuntu-latest
