@@ -124,7 +124,8 @@ echo ""
 read -rp "Remove this setup script? It's no longer needed. (Y/n): " REMOVE_SCRIPT
 if [[ "${REMOVE_SCRIPT,,}" != "n" ]]; then
     rm -f scripts/init.sh
-    # Remove scripts dir if empty
+    # Remove scripts dir if only .gitkeep remains
+    rm -f scripts/.gitkeep 2>/dev/null || true
     rmdir scripts 2>/dev/null || true
     echo -e "  ${GREEN}✓${NC} Removed setup script"
 fi

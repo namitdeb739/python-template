@@ -11,6 +11,5 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: []
-        args: [--config-file=pyproject.toml]
         pass_filenames: false
-        entry: mypy src/
+        entry: mypy --config-file=pyproject.toml src/

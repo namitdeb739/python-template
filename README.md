@@ -312,7 +312,7 @@ docker compose up --build
 The `Dockerfile` uses a multi-stage build optimized for fast rebuilds:
 
 1. Copies `uv` binary from the official image (`ghcr.io/astral-sh/uv`)
-2. Installs dependencies first (`uv sync --frozen --no-dev --no-install-project`) — this layer is cached unless `pyproject.toml` or `uv.lock` change
+2. Installs dependencies first (`uv sync --no-dev --no-install-project`) — this layer is cached unless `pyproject.toml` or `uv.lock` change
 3. Copies source code and installs the project
 4. Runs via `uv run project-name`
 

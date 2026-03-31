@@ -1,7 +1,10 @@
 FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04 AS base
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3.11 python3.11-venv python3-pip ca-certificates \
+    software-properties-common ca-certificates \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get update && apt-get install -y --no-install-recommends \
+    python3.11 python3.11-venv \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -10,10 +13,10 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 ENV UV_PYTHON=python3.11
 
-COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-dev --extra ml --no-install-project
+COPY pyproject.toml uv.lock* ./
+RUN uv sync --no-dev --extra ml --no-install-project
 
 COPY src/ src/
-RUN uv sync --frozen --no-dev --extra ml
+RUN uv sync --no-dev --extra ml
 
 CMD ["uv", "run", "project-name"]

@@ -7,7 +7,7 @@ Usage:
     from project_name.config import Config
 
     config = Config()
-    config = Config(seed=42, learning_rate=1e-4)
+    config = Config(seed=42, data_dir="data/processed")
 """
 
 from __future__ import annotations
@@ -36,7 +36,7 @@ class Config:
     # Experiment tracking (uncomment for your tracker)
     # experiment_name: str = "default"
     # run_name: str | None = None
-    # tags: list[str] = field(default_factory=list)
+    # tags: list[str] = field(default_factory=list)  # requires: from dataclasses import field
 
     def __post_init__(self) -> None:
         self.data_dir = Path(self.data_dir)

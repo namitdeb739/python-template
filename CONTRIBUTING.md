@@ -1,6 +1,6 @@
 # Contributing
 
-See the full [Contributing Guide](https://your-username.github.io/your-repo/contributing/) for detailed instructions.
+See the full [Contributing Guide](docs/contributing.md) for detailed instructions.
 
 ## Quick start
 
