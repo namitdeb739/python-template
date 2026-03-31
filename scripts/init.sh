@@ -124,7 +124,8 @@ echo -e "  ${GREEN}✓${NC} Pre-commit hooks installed"
 # --- Branch protection ---
 
 if command -v gh &>/dev/null && gh auth status &>/dev/null 2>&1; then
-    REPO="${GITHUB_USER}/${PROJECT_NAME}"
+    # Detect actual repo from git remote (project name may differ from repo name)
+    REPO=$(git remote get-url origin 2>/dev/null | sed 's|.*github.com[:/]||;s|\.git$||')
     BP_JSON=$(mktemp)
     cat > "$BP_JSON" <<'BPEOF'
 {
