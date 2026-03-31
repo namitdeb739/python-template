@@ -125,7 +125,8 @@ echo -e "  ${GREEN}✓${NC} Pre-commit hooks installed"
 
 if command -v gh &>/dev/null && gh auth status &>/dev/null 2>&1; then
     REPO="${GITHUB_USER}/${PROJECT_NAME}"
-    gh api "repos/${REPO}/branches/main/protection" -X PUT --silent --input - <<BPEOF 2>/dev/null
+    BP_JSON=$(mktemp)
+    cat > "$BP_JSON" <<'BPEOF'
 {
   "required_status_checks": {
     "strict": true,
@@ -138,11 +139,12 @@ if command -v gh &>/dev/null && gh auth status &>/dev/null 2>&1; then
   "allow_deletions": false
 }
 BPEOF
-    if [[ $? -eq 0 ]]; then
+    if gh api "repos/${REPO}/branches/main/protection" -X PUT --silent --input "$BP_JSON" 2>/dev/null; then
         echo -e "  ${GREEN}✓${NC} Branch protection enabled on main"
     else
         echo "  ⚠ Could not set branch protection (check gh auth permissions)"
     fi
+    rm -f "$BP_JSON"
 else
     echo "  ⚠ gh CLI not found or not authenticated — set up branch protection manually"
 fi
