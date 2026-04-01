@@ -51,6 +51,10 @@ plugins:
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
+  - CI/CD & Infrastructure: ci-cd.md
+  - Docker: docker.md
+  - ML Setup: ml-setup.md
+  - Releasing: releasing.md
   - API Reference: api.md
   - Contributing: contributing.md
   - Changelog: changelog.md

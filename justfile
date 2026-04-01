@@ -51,11 +51,11 @@ docs-build:
 
 # Build Docker image
 docker-build:
-    docker compose build
+    docker compose -f docker/docker-compose.yml build
 
 # Run in Docker
 docker-run:
-    docker compose up
+    docker compose -f docker/docker-compose.yml up
 
 # Audit dependencies for vulnerabilities
 audit:
@@ -75,7 +75,7 @@ release bump:
 
 # Build GPU Docker image
 docker-build-gpu:
-    docker build -f Dockerfile.gpu -t project-name-gpu .
+    docker build -f docker/Dockerfile.gpu -t project-name-gpu .
 
 # Initialize DVC (run once)
 dvc-init:

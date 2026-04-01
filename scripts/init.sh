@@ -146,8 +146,20 @@ BPEOF
         echo "  ⚠ Could not set branch protection (check gh auth permissions)"
     fi
     rm -f "$BP_JSON"
+
+    # Enable GitHub Pages with Actions as the build source
+    if gh api "repos/${REPO}/pages" -X POST -f build_type=workflow --silent 2>/dev/null; then
+        echo -e "  ${GREEN}✓${NC} GitHub Pages enabled (Actions source)"
+    else
+        echo "  ⚠ Could not enable GitHub Pages (may already be enabled, or enable manually in Settings > Pages)"
+    fi
+
+    # Set repo description and topics
+    if gh repo edit "${REPO}" --description "${DESCRIPTION}" 2>/dev/null; then
+        echo -e "  ${GREEN}✓${NC} Repository description set"
+    fi
 else
-    echo "  ⚠ gh CLI not found or not authenticated — set up branch protection manually"
+    echo "  ⚠ gh CLI not found or not authenticated — set up branch protection and GitHub Pages manually"
 fi
 
 # --- Self-destruct option ---

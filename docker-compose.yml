@@ -1,7 +1,0 @@
-services:
-  app:
-    build: .
-    volumes:
-      - ./data:/app/data
-    environment:
-      - PYTHONUNBUFFERED=1
