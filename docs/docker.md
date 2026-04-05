@@ -9,14 +9,15 @@ just docker-build    # or: docker compose -f docker/docker-compose.yml build
 just docker-run      # or: docker compose -f docker/docker-compose.yml up
 ```
 
-The `Dockerfile` uses a multi-stage build optimized for fast rebuilds:
+The `Dockerfile` is structured for fast rebuilds and safer runtime defaults:
 
-1. Copies `uv` binary from the official image (`ghcr.io/astral-sh/uv`)
+1. Copies `uv` and `uvx` from the official image (`ghcr.io/astral-sh/uv`)
 2. Installs dependencies first (`uv sync --no-dev --no-install-project`): cached unless `pyproject.toml` or `uv.lock` change
-3. Copies source and installs the project
-4. Runs via `uv run project-name`
+3. Copies `README.md` and source, then installs the project
+4. Drops privileges to a non-root `app` user before runtime
+5. Runs via `uv run project-name`
 
-The `docker-compose.yml` uses the repo root as build context and mounts `data/` as a volume with `PYTHONUNBUFFERED=1`.
+The `docker-compose.yml` uses the repo root as build context and mounts `data/` as a volume with `PYTHONUNBUFFERED=1`. A root-level `.dockerignore` excludes docs, test artifacts, and local environment files from the build context.
 
 ## GPU build
 

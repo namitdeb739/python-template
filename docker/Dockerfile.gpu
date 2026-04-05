@@ -9,14 +9,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+RUN groupadd --system app && useradd --system --gid app --home-dir /app --create-home app
+
+COPY --from=ghcr.io/astral-sh/uv:0.11.3 /uv /uvx /bin/
 
 ENV UV_PYTHON=python3.11
 
 COPY pyproject.toml uv.lock* ./
 RUN uv sync --no-dev --extra ml --no-install-project
 
+COPY README.md ./
 COPY src/ src/
 RUN uv sync --no-dev --extra ml
+
+RUN chown -R app:app /app
+USER app
 
 CMD ["uv", "run", "project-name"]
