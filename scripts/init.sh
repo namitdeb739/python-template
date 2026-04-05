@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
+
+# --- CI/non-interactive bypass ---
+NONINTERACTIVE="${INIT_NONINTERACTIVE:-0}"
+
 
 # Interactive project setup script
 # Run after cloning from the template: just init
@@ -22,23 +27,48 @@ fi
 
 # --- Prompts ---
 
-read -rp "Project name (kebab-case, e.g. my-ml-project): " PROJECT_NAME
-if [[ -z "$PROJECT_NAME" ]]; then
-    echo "Error: project name is required."
-    exit 1
-fi
-
-# Derive Python package name (snake_case)
-PACKAGE_NAME="${PROJECT_NAME//-/_}"
-
-read -rp "Short description: " DESCRIPTION
-read -rp "Author name: " AUTHOR_NAME
-read -rp "Author email: " AUTHOR_EMAIL
-read -rp "GitHub username or org: " GITHUB_USER
-
 echo ""
-read -rp "Initialize DVC for data versioning? (y/N): " INIT_DVC
-read -rp "Create .env from .env.example? (y/N): " INIT_ENV
+
+if [[ "$NONINTERACTIVE" == "1" ]]; then
+    PROJECT_NAME="${PROJECT_NAME:-project-template}"
+    PACKAGE_NAME="${PROJECT_NAME//-/_}"
+    DESCRIPTION="${DESCRIPTION:-A short description of your project}"
+    AUTHOR_NAME="${AUTHOR_NAME:-Your Name}"
+    AUTHOR_EMAIL="${AUTHOR_EMAIL:-your-email@example.com}"
+    GITHUB_USER="${GITHUB_USER:-your-username}"
+    INIT_DVC="n"
+    INIT_ENV="n"
+    INIT_ML="n"
+    INIT_SECURITY="y"
+    INIT_PRECOMMIT="y"
+    INIT_DOCS="y"
+    INIT_DOCKER="y"
+    INIT_CI="y"
+    INIT_NOTEBOOK="n"
+    INIT_EXDATA="n"
+else
+    read -rp "Project name (kebab-case, e.g. my-ml-project): " PROJECT_NAME
+    if [[ -z "$PROJECT_NAME" ]]; then
+            echo "Error: project name is required."
+            exit 1
+    fi
+    PACKAGE_NAME="${PROJECT_NAME//-/_}"
+    read -rp "Short description: " DESCRIPTION
+    read -rp "Author name: " AUTHOR_NAME
+    read -rp "Author email: " AUTHOR_EMAIL
+    read -rp "GitHub username or org: " GITHUB_USER
+    echo ""
+    read -rp "Initialize DVC for data versioning? (y/N): " INIT_DVC
+    read -rp "Create .env from .env.example? (y/N): " INIT_ENV
+    read -rp "Include ML/AI packages ([ml] extras)? (y/N): " INIT_ML
+    read -rp "Enable security hardening (pre-commit, Ruff, mypy, audit)? (Y/n): " INIT_SECURITY
+    read -rp "Enable pre-commit hooks? (Y/n): " INIT_PRECOMMIT
+    read -rp "Include documentation tooling (MkDocs)? (Y/n): " INIT_DOCS
+    read -rp "Include Docker support (Dockerfile, Compose)? (Y/n): " INIT_DOCKER
+    read -rp "Include CI/CD workflows (GitHub Actions)? (Y/n): " INIT_CI
+    read -rp "Include Jupyter/Notebook support? (y/N): " INIT_NOTEBOOK
+    read -rp "Add example/test data to data/? (y/N): " INIT_EXDATA
+fi
 
 echo ""
 echo -e "${CYAN}Setting up ${BOLD}${PROJECT_NAME}${NC}${CYAN} (package: ${PACKAGE_NAME})...${NC}"
@@ -91,8 +121,13 @@ YEAR=$(date +%Y)
 sedi "s/Copyright (c) [0-9]* ${PROJECT_NAME} contributors/Copyright (c) ${YEAR} ${AUTHOR_NAME}/" LICENSE 2>/dev/null || true
 echo -e "  ${GREEN}✓${NC} Updated LICENSE copyright"
 
-# --- Optional: DVC ---
+echo ""
+echo -e "${CYAN}Installing dependencies...${NC}"
+git config core.longpaths true
+echo -e "  ${GREEN}✓${NC} Dependencies locked and installed"
+echo -e "  ${GREEN}✓${NC} Pre-commit hooks installed"
 
+# --- Optional: DVC ---
 if [[ "${INIT_DVC,,}" == "y" ]]; then
     if command -v dvc &>/dev/null || uv run dvc version &>/dev/null 2>&1; then
         uv run dvc init
@@ -104,22 +139,68 @@ if [[ "${INIT_DVC,,}" == "y" ]]; then
 fi
 
 # --- Optional: .env ---
-
 if [[ "${INIT_ENV,,}" == "y" ]]; then
     cp .env.example .env
     echo -e "  ${GREEN}✓${NC} Created .env from .env.example (fill in your API keys)"
 fi
 
-# --- Lock dependencies ---
+# --- Optional: ML/AI packages ---
+if [[ "${INIT_ML,,}" == "y" ]]; then
+    uv sync --extra ml
+    echo -e "  ${GREEN}✓${NC} ML/AI packages ([ml] extras) installed"
+fi
 
+# --- Optional: Security hardening ---
+if [[ "${INIT_SECURITY,,}" != "n" ]]; then
+    uv run pre-commit install
+    uv run ruff check src/ tests/
+    uv run mypy src/
+    uv run pip-audit
+    echo -e "  ${GREEN}✓${NC} Security hardening tools enabled"
+fi
+
+# --- Optional: Pre-commit hooks ---
+if [[ "${INIT_PRECOMMIT,,}" != "n" ]]; then
+    uv run pre-commit install
+    echo -e "  ${GREEN}✓${NC} Pre-commit hooks installed"
+fi
+
+# --- Optional: Documentation ---
+if [[ "${INIT_DOCS,,}" != "n" ]]; then
+    uv run mkdocs build
+    echo -e "  ${GREEN}✓${NC} Documentation tooling enabled"
+fi
+
+# --- Optional: Docker ---
+if [[ "${INIT_DOCKER,,}" != "n" ]]; then
+    docker --version && echo -e "  ${GREEN}✓${NC} Docker support enabled (Dockerfile, Compose)"
+fi
+
+# --- Optional: CI/CD ---
+if [[ "${INIT_CI,,}" != "n" ]]; then
+    echo -e "  ${GREEN}✓${NC} CI/CD workflows included (GitHub Actions)"
+fi
+
+# --- Optional: Jupyter/Notebook ---
+if [[ "${INIT_NOTEBOOK,,}" == "y" ]]; then
+    uv run jupyter notebook --version
+    echo -e "  ${GREEN}✓${NC} Jupyter/Notebook support enabled"
+fi
+
+# --- Optional: Example/test data ---
+if [[ "${INIT_EXDATA,,}" == "y" ]]; then
+    cp data/.gitkeep data/example.txt 2>/dev/null || touch data/example.txt
+    echo "example,data" > data/example.txt
+    echo -e "  ${GREEN}✓${NC} Example/test data added to data/"
+fi
+
+# --- Lock dependencies ---
 echo ""
 echo -e "${CYAN}Installing dependencies...${NC}"
 git config core.longpaths true
 uv lock
 uv sync --dev
-uv run pre-commit install
 echo -e "  ${GREEN}✓${NC} Dependencies locked and installed"
-echo -e "  ${GREEN}✓${NC} Pre-commit hooks installed"
 
 # --- Branch protection ---
 
