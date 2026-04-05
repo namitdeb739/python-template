@@ -55,3 +55,8 @@ output/
 # OS
 .DS_Store
 Thumbs.db
+
+.github/.copilot/
+# Do NOT ignore the shared Copilot instructions file
+!.github/copilot-instructions.md
+.github/copilot-instructions.md
