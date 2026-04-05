@@ -12,26 +12,31 @@ A modern, batteries-included Python project template with [uv](https://docs.astr
 
 ## Features
 
-**Development**
+### Development
+
 - [uv](https://docs.astral.sh/uv/) package management | [ruff](https://docs.astral.sh/ruff/) linting & formatting | [mypy](https://mypy.readthedocs.io/) strict type checking
 - [pytest](https://docs.pytest.org/) + coverage | [pre-commit](https://pre-commit.com/) hooks | [just](https://github.com/casey/just) task runner
 
-**CI/CD & Security**
+### CI/CD & Security
+
 - GitHub Actions CI (lint, typecheck, test matrix, dependency audit)
 - [CodeQL](https://codeql.github.com/) scanning | [pip-audit](https://github.com/pypa/pip-audit) | [Dependabot](https://docs.github.com/en/code-security/dependabot) | [Codecov](https://codecov.io/)
 - [Conventional Commits](https://www.conventionalcommits.org/) enforced on commits and PR titles
 - Branch protection with required status checks (auto-configured)
 
-**Documentation & Publishing**
+### Documentation & Publishing
+
 - [MkDocs Material](https://squidfunk.github.io/mkdocs-material/) with auto-deploy to GitHub Pages
 - [mkdocstrings](https://mkdocstrings.github.io/) for API docs from docstrings
 - PyPI publishing via trusted publishers | version bumping via [bump-my-version](https://github.com/callowayproject/bump-my-version)
 
-**ML-Ready**
+### ML-Ready
+
 - Optional ML dependency group | typed dataclass config | notebooks, data, scripts directories
 - Docker support (CPU + GPU variants) | DVC data versioning | `.env` template for API keys
 
-**Developer Experience**
+### Developer Experience
+
 - [Dev Containers](https://containers.dev/) for GitHub Codespaces / VS Code
 - VS Code settings + recommended extensions | `.editorconfig`
 - Issue templates (YAML forms) | PR template with checklist
@@ -50,6 +55,16 @@ just init
 
 The setup script prompts for project name, description, author, and GitHub username, then automatically renames all references, installs dependencies, configures pre-commit hooks, enables branch protection, and enables GitHub Pages.
 
+## Template setup checklist
+
+After running `just init`, verify that no template placeholders remain:
+
+```bash
+rg -n "project-name|project_name|your-username|your-repo|your-email@example.com"
+```
+
+If this command returns matches, update those files before your first release.
+
 ## Common commands
 
 ```bash
@@ -63,7 +78,7 @@ just             # list all available recipes
 
 ## Project structure
 
-```
+```text
 src/project_name/       Source package (src layout)
 tests/                  Test suite (pytest)
 docs/                   Documentation (MkDocs Material)

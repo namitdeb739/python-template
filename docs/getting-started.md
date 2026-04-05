@@ -19,11 +19,21 @@ just init
 
 The setup script will prompt for your project name, description, and author info, then configure everything automatically.
 
+## Verify placeholder replacement
+
+`just init` replaces common template placeholders. Before your first release, run:
+
+```bash
+rg -n "project-name|project_name|your-username|your-repo|your-email@example.com"
+```
+
+Any remaining matches should be updated manually.
+
 ## Project layout
 
 After setup, your project looks like:
 
-```
+```text
 src/your_package/     # Your source code goes here
 tests/                # Tests (pytest)
 notebooks/            # Jupyter notebooks for exploration

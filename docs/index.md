@@ -6,6 +6,16 @@ A short description of your project.
 
 Replace this with an introduction to what your project does, who it's for, and why it exists.
 
+## Before your first release
+
+Run this check after `just init` to confirm all template placeholders were replaced:
+
+```bash
+rg -n "project-name|project_name|your-username|your-repo|your-email@example.com"
+```
+
+If any matches remain, update those files before publishing.
+
 ## Quick links
 
 - [Getting Started](getting-started.md): setup, development workflow, adding dependencies

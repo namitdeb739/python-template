@@ -88,7 +88,7 @@ just docs    # preview locally at http://127.0.0.1:8000/
 
 This project uses [Conventional Commits](https://www.conventionalcommits.org/). Every commit message must follow this format:
 
-```
+```text
 type: short description
 ```
 

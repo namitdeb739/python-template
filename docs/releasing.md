@@ -11,6 +11,7 @@ just release major    # 0.1.0 → 1.0.0
 ```
 
 This:
+
 1. Runs `just check` (lint + typecheck + test)
 2. Bumps version in all configured files
 3. Creates a commit with message `chore(release): bump version X → Y`

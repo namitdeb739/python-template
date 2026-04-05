@@ -26,7 +26,7 @@ uv sync --extra ml
 ## Project layout
 
 | Directory | Purpose |
-|---|---|
+| --- | --- |
 | `notebooks/` | Jupyter notebooks for exploration and prototyping |
 | `data/` | Datasets (gitignored by default: use DVC for versioning) |
 | `scripts/` | Standalone scripts for data processing, training, evaluation |
