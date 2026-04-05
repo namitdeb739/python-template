@@ -21,8 +21,8 @@ class Config:
     """Project configuration."""
 
     # Paths
-    data_dir: Path = Path("data")
-    output_dir: Path = Path("output")
+    data_dir: Path | str = Path("data")
+    output_dir: Path | str = Path("output")
 
     # Reproducibility
     seed: int = 42
