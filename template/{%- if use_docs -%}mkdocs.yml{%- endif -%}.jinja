@@ -51,9 +51,15 @@ plugins:
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
+{%- if ci_github %}
   - CI/CD & Infrastructure: ci-cd.md
+{%- endif %}
+{%- if use_docker != 'none' %}
   - Docker: docker.md
+{%- endif %}
+{%- if use_ml %}
   - ML Setup: ml-setup.md
+{%- endif %}
   - Releasing: releasing.md
   - API Reference: api.md
   - Contributing: contributing.md

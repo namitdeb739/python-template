@@ -9,9 +9,15 @@ Replace this with an introduction to what your project does, who it's for, and w
 ## Quick links
 
 - [Getting Started](getting-started.md): setup, development workflow, adding dependencies
+{%- if ci_github %}
 - [CI/CD & Infrastructure](ci-cd.md): pipelines, security scanning, publishing, Dependabot
+{%- endif %}
+{%- if use_docker != 'none' %}
 - [Docker](docker.md): CPU/GPU builds, dev containers
+{%- endif %}
+{%- if use_ml %}
 - [ML Setup](ml-setup.md): config pattern, DVC, environment variables
+{%- endif %}
 - [Releasing](releasing.md): version bumping, PyPI publishing
 - [API Reference](api.md): auto-generated from source docstrings
 - [Contributing](contributing.md): code style, testing, commit conventions

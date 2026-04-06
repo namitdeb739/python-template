@@ -26,6 +26,7 @@ class Config:
 
     # Reproducibility
     seed: int = 42
+{% if use_ml %}
 
     # Training (uncomment and customize as needed)
     # learning_rate: float = 1e-3
@@ -38,6 +39,7 @@ class Config:
     # experiment_name: str = "default"
     # run_name: str | None = None
     # tags: list[str] = field(default_factory=list)
+{% endif %}
 
     def __post_init__(self) -> None:
         self.data_dir = Path(self.data_dir)

@@ -11,17 +11,28 @@ dependencies = []
 [dependency-groups]
 dev = [
     "pytest>=8.0",
+{%- if testing != 'minimal' %}
     "pytest-cov>=5.0",
+{%- endif %}
+{%- if use_typecheck %}
     "mypy>=1.10",
+{%- endif %}
+{%- if security != 'none' %}
     "pre-commit>=3.7",
+{%- endif %}
     "jupyter>=1.0",
     "ruff>=0.5",
+{%- if use_docs %}
     "mkdocs-material>=9.5",
     "mkdocstrings[python]>=0.25",
+{%- endif %}
+{%- if security == 'full' %}
     "pip-audit>=2.7",
+{%- endif %}
     "commitizen>=4.1",
     "copier>=9.0",
 ]
+{% if use_ml %}
 
 [project.optional-dependencies]
 ml = [
@@ -34,6 +45,7 @@ ml = [
     # "transformers>=4.40",
     # "dvc>=3.50",
 ]
+{% endif %}
 
 [project.scripts]
 {{ project_name }} = "{{ package_name }}.main:main"
@@ -66,6 +78,7 @@ select = [
 
 [tool.ruff.lint.isort]
 known-first-party = ["{{ package_name }}"]
+{% if use_typecheck %}
 
 [tool.mypy]
 python_version = "3.11"
@@ -73,6 +86,7 @@ strict = true
 warn_return_any = true
 warn_unused_configs = true
 mypy_path = "src"
+{% endif %}
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

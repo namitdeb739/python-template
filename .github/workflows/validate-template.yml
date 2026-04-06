@@ -10,7 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  validate-template:
+  validate-standard:
+    name: Validate (standard defaults)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -22,7 +23,7 @@ jobs:
         run: |
           git config --global user.name "CI"
           git config --global user.email "ci@test.com"
-      - name: Render template
+      - name: Render template (standard)
         run: |
           TEMPLATE_DIR=$(mktemp -d)
           git archive HEAD | tar -C "$TEMPLATE_DIR" -xf -
@@ -49,3 +50,46 @@ jobs:
       - name: Audit
         working-directory: /tmp/rendered-project
         run: uv run pip-audit
+
+  validate-minimal:
+    name: Validate (minimal)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
+        with:
+          version: "0.11.3"
+          python-version: "3.12"
+      - name: Configure git
+        run: |
+          git config --global user.name "CI"
+          git config --global user.email "ci@test.com"
+      - name: Render template (minimal)
+        run: |
+          TEMPLATE_DIR=$(mktemp -d)
+          git archive HEAD | tar -C "$TEMPLATE_DIR" -xf -
+          uvx copier copy "$TEMPLATE_DIR" /tmp/rendered-minimal \
+            --trust \
+            --defaults \
+            --overwrite \
+            --data project_name=minimal-project \
+            --data description="A minimal project" \
+            --data author_name="Test Author" \
+            --data author_email="test@example.com" \
+            --data github_user=test-user \
+            --data ci_github=false \
+            --data security=none \
+            --data use_docker=none \
+            --data use_docs=false \
+            --data testing=minimal \
+            --data use_ml=false \
+            --data use_typecheck=false \
+            --data use_devcontainer=false
+      - name: Lint
+        working-directory: /tmp/rendered-minimal
+        run: |
+          uv run ruff check src/ tests/
+          uv run ruff format --check src/ tests/
+      - name: Test
+        working-directory: /tmp/rendered-minimal
+        run: uv run pytest -v

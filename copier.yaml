@@ -2,6 +2,8 @@
 # Usage: uvx copier copy gh:namitdeb739/python-template <project-dir>
 # Docs:  https://namitdeb739.github.io/python-template
 
+# --- Project identity ---
+
 project_name:
   type: str
   help: Project name in kebab-case (e.g. my-ml-project)
@@ -33,15 +35,73 @@ github_user:
   help: GitHub username or organisation
   placeholder: your-username
 
+# --- Feature toggles ---
+
+ci_github:
+  type: bool
+  default: true
+  help: Enable GitHub Actions CI/CD?
+
+security:
+  type: str
+  default: basic
+  help: "Security level"
+  choices:
+    none: No security tooling
+    basic: Pre-commit hooks + ruff linting
+    full: Basic + CodeQL, pip-audit, Dependabot, branch protection
+
+use_docker:
+  type: str
+  default: cpu
+  help: "Docker support"
+  choices:
+    none: No Docker
+    cpu: CPU Dockerfile + Compose
+    gpu: CPU + GPU Dockerfile
+
+use_docs:
+  type: bool
+  default: true
+  help: Include MkDocs documentation?
+
+testing:
+  type: str
+  default: standard
+  help: "Testing level"
+  choices:
+    minimal: pytest only
+    standard: pytest + coverage + fixtures
+    full: Standard + coverage threshold + parametrized examples
+
+use_ml:
+  type: bool
+  default: false
+  help: Include ML/data science setup (notebooks, data dir, optional deps)?
+
+use_typecheck:
+  type: bool
+  default: true
+  help: Enable mypy strict type checking?
+
+use_devcontainer:
+  type: bool
+  default: false
+  help: Include VS Code dev container config?
+
+# --- Post-setup options ---
+
 init_dvc:
   type: bool
   help: Initialise DVC for data versioning?
   default: false
+  when: "{{ use_ml }}"
 
 init_env:
   type: bool
   help: Create .env from .env.example?
   default: false
+  when: "{{ use_ml }}"
 
 _subdirectory: template
 
@@ -63,7 +123,8 @@ _tasks:
   - "git commit -m 'chore: initial project from template'"
   # Install dependencies and hooks
   - uv sync --dev
-  - uv run pre-commit install
+  - command: uv run pre-commit install
+    when: "{{ security != 'none' }}"
   # Optional extras
   - command: uv run dvc init && uv run dvc config core.autostage true
     when: "{{ init_dvc }}"
@@ -80,7 +141,9 @@ _message_after_copy: |
     gh repo create --public {{ github_user }}/{{ project_name }}
     git remote add origin https://github.com/{{ github_user }}/{{ project_name }}.git
     git push -u origin main
+  {% if ci_github %}
     just init-remote                 # branch protection + GitHub Pages (requires gh CLI)
+  {% endif %}
 
   Update later:
     uvx copier update                # pull in template improvements

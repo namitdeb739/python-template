@@ -7,21 +7,31 @@ This is a Python project using **uv** for dependency management and **just** as 
 ## Key Commands
 
 ```bash
-just setup       # Install deps + pre-commit hooks
-just check       # lint + typecheck + test (full CI mirror)
+just setup       # Install deps{% if security != 'none' %} + pre-commit hooks{% endif %}
+
+just check       # lint{% if use_typecheck %} + typecheck{% endif %} + test (full CI mirror)
 just lint        # ruff check + format check
 just fix         # auto-fix lint and formatting
+{%- if use_typecheck %}
 just typecheck   # mypy strict
+{%- endif %}
 just test        # pytest
-just coverage    # pytest with coverage report (80% threshold)
+{%- if testing != 'minimal' %}
+just coverage    # pytest with coverage report{% if testing == 'full' %} (80% threshold){% endif %}
+
+{%- endif %}
+{%- if use_docs %}
 just docs        # mkdocs serve (local preview)
+{%- endif %}
 just release patch|minor|major  # bump version, tag, push
 ```
 
 ## Code Style
 
 - **Formatter/linter**: ruff (line length 88, pyupgrade, bugbear, simplify rules enforced)
+{%- if use_typecheck %}
 - **Types**: mypy strict — all public functions must be fully annotated
+{%- endif %}
 - **Imports**: isort via ruff; stdlib → third-party → first-party order
 - **Commits**: conventional commits enforced (`feat:`, `fix:`, `chore:`, `refactor:`, `docs:`, `test:`, `ci:`)
 
@@ -29,18 +39,25 @@ just release patch|minor|major  # bump version, tag, push
 
 - **Config**: `dataclasses.dataclass` in `config.py` — no Pydantic, no env parsing at import time. `__post_init__` converts `Path` fields.
 - **Entry point**: `src/{{ package_name }}/main.py` — CLI wired via `[project.scripts]` in `pyproject.toml`
-- **Tests**: pytest, fixtures in `tests/conftest.py`, parametrize for data-driven cases
+- **Tests**: pytest{% if testing != 'minimal' %}, fixtures in `tests/conftest.py`, parametrize for data-driven cases{% endif %}
+
+{%- if use_docs %}
 - **Docs**: MkDocs Material + mkdocstrings — docstrings drive the API reference page
+{%- endif %}
 - Keep reusable production logic in `src/{{ package_name }}/`, not in notebooks
+{%- if use_ml %}
 - Keep exploratory work in `notebooks/` and standalone utilities in `scripts/`
 - Treat `data/` as gitignored/DVC-ready data storage
+{%- endif %}
 
 ## Adding Dependencies
 
 ```bash
 uv add <package>           # runtime dependency
 uv add --dev <package>     # dev/test dependency
+{%- if use_ml %}
 uv add --optional ml <package>  # optional ML extras
+{%- endif %}
 ```
 
 Always commit `uv.lock` after adding dependencies.
@@ -50,30 +67,48 @@ Always commit `uv.lock` after adding dependencies.
 - Fixtures go in `conftest.py` — never import them explicitly in test files
 - Use `tmp_path` (built-in) for temporary file/directory fixtures
 - Parametrize data-driven tests with `@pytest.mark.parametrize`
+{%- if testing == 'full' %}
 - Coverage threshold: 80% minimum (enforced in `just coverage`)
+{%- endif %}
+{% if ci_github %}
 
 ## CI Workflows
 
 | Workflow | Trigger | Checks |
 |----------|---------|--------|
-| `ci.yml` | push/PR to main | lint, typecheck, test (3.11–3.13), audit |
+| `ci.yml` | push/PR to main | lint,{% if use_typecheck %} typecheck,{% endif %} test (3.11–3.13){% if security != 'none' %}, audit{% endif %} |
+{%- if security == 'full' %}
 | `codeql.yml` | push/PR + weekly | static security analysis |
+{%- endif %}
 | `commit-lint.yml` | PR | conventional commit format |
+{%- if use_docs %}
 | `docs.yml` | push to main | build and deploy MkDocs to GitHub Pages |
+{%- endif %}
 | `publish.yml` | version tag push | build + publish to PyPI |
+{% endif %}
+{% if use_docs %}
 
 ## Docs Links
 
 - Project overview and command quickstart: `README.md`
 - Development workflow and coding expectations: `docs/getting-started.md`, `docs/contributing.md`
+{%- if ci_github %}
 - CI/CD and security workflow details: `docs/ci-cd.md`
+{%- endif %}
+{%- if use_docker != 'none' %}
 - Container workflows: `docs/docker.md`
+{%- endif %}
+{%- if use_ml %}
 - ML and data workflow details: `docs/ml-setup.md`
+{%- endif %}
 - Release process and versioning details: `docs/releasing.md`
+{% endif %}
 
 ## What NOT to Do
 
 - Do not bypass `uv` with `pip install` — always use `uv add` or `uv run`
 - Do not add `print()` debug statements to library code — use `logging`
+{%- if use_ml %}
 - Do not commit `.env` files — use `.env.example` as the template
+{%- endif %}
 - Do not add secrets or credentials to any tracked file

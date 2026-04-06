@@ -2,22 +2,28 @@
 
 ## CI pipeline (`ci.yml`)
 
-Runs on every push to `main` and on pull requests. Four parallel jobs:
+Runs on every push to `main` and on pull requests.
 
 | Job | What it does |
 | --- | --- |
 | **lint** | `ruff check` + `ruff format --check` |
+{%- if use_typecheck %}
 | **type-check** | `mypy` in strict mode |
-| **test** | `pytest` with coverage across Python 3.11, 3.12, 3.13. Uploads to Codecov on 3.12 |
+{%- endif %}
+| **test** | `pytest`{% if testing != 'minimal' %} with coverage{% endif %} across Python 3.11, 3.12, 3.13{% if testing != 'minimal' %}. Uploads to Codecov on 3.12{% endif %} |
+{%- if security != 'none' %}
 | **audit** | `pip-audit` for known dependency vulnerabilities |
+{%- endif %}
 
 All jobs use [`astral-sh/setup-uv`](https://github.com/astral-sh/setup-uv) with dependency caching.
 
 Workflows pin third-party and first-party GitHub Actions to immutable commit SHAs, and set an explicit `uv` version for reproducibility.
+{% if use_docs %}
 
 ## Docs deploy (`docs.yml`)
 
 On push to `main`, builds the MkDocs site and deploys to GitHub Pages. `just init-remote` enables Pages automatically.
+{% endif %}
 
 ## Standards enforcement
 
@@ -32,7 +38,9 @@ refactor: simplify config parsing
 
 | Layer | Tool | Where |
 | --- | --- | --- |
+{%- if security != 'none' %}
 | **Commit messages** (local) | [commitizen](https://commitizen-tools.github.io/commitizen/) pre-commit hook | Validates on `git commit` |
+{%- endif %}
 | **Commit messages** (CI) | `cz check` in `commit-lint.yml` | Validates all commits in a PR |
 | **PR titles** | [`action-semantic-pull-request`](https://github.com/amannn/action-semantic-pull-request) in `pr-title.yml` | Blocks merge if invalid |
 | **Issues** | YAML form templates | Required fields, dropdowns |
@@ -43,14 +51,17 @@ Valid types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`
 
 `just init-remote` automatically configures branch protection on `main`:
 
-- **Required status checks**: lint, type-check, test (3.11/3.12/3.13), audit, validate
+- **Required status checks**: lint,{% if use_typecheck %} type-check,{% endif %} test (3.11/3.12/3.13){% if security != 'none' %}, audit{% endif %}
+
 - **Require up-to-date branches** before merge
 - **Block force pushes** and branch deletion
+{% if security == 'full' %}
 
 ## Security scanning
 
 - **CodeQL** (`codeql.yml`): static analysis on push, PR, and weekly. Catches injection, hardcoded credentials, etc.
 - **pip-audit** (`ci.yml`): checks dependencies against the [Python Packaging Advisory Database](https://github.com/pypa/advisory-database).
+{% endif %}
 
 ## Publishing to PyPI (`publish.yml`)
 
@@ -59,6 +70,7 @@ Triggers on GitHub Releases using [trusted publishers](https://docs.pypi.org/tru
 1. Go to [pypi.org](https://pypi.org) → your project → Publishing → Add a new publisher
 2. Enter: repo `{{ github_user }}/{{ project_name }}`, workflow `publish.yml`, environment `pypi`
 3. Create a GitHub Release: builds with `uv build` and publishes automatically
+{% if security == 'full' %}
 
 ## Dependabot (`dependabot.yml`)
 
@@ -68,3 +80,4 @@ Opens weekly PRs for two ecosystems:
 - **github-actions**: action version bumps
 
 All Dependabot PRs use conventional commit prefixes (`chore(deps):`, `ci(deps):`) to pass PR title validation.
+{% endif %}

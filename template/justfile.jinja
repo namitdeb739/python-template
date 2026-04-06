@@ -1,6 +1,7 @@
 # List available recipes
 default:
     @just --list
+{% if ci_github %}
 
 # Set up branch protection and GitHub Pages (run once after pushing to GitHub)
 init-remote:
@@ -16,7 +17,7 @@ init-remote:
     {
       "required_status_checks": {
         "strict": true,
-        "contexts": ["lint", "type-check", "test (3.11)", "test (3.12)", "test (3.13)", "audit"]
+        "contexts": ["lint",{% if use_typecheck %} "type-check",{% endif %} "test (3.11)", "test (3.12)", "test (3.13)"{% if security != 'none' %}, "audit"{% endif %}]
       },
       "enforce_admins": false,
       "required_pull_request_reviews": null,
@@ -31,20 +32,25 @@ init-remote:
         echo "⚠ Could not set branch protection (check gh auth permissions)"
     fi
     rm -f "$BP_JSON"
+{%- if use_docs %}
     if gh api "repos/${REPO}/pages" -X POST -f build_type=workflow --silent 2>/dev/null; then
         echo "✓ GitHub Pages enabled (Actions source)"
     else
         echo "⚠ Could not enable GitHub Pages (may already be enabled, or enable manually in Settings > Pages)"
     fi
+{%- endif %}
+{% endif %}
 
 # Install dependencies and set up dev environment
 setup:
     git config core.longpaths true
     uv sync --dev
+{%- if security != 'none' %}
     uv run pre-commit install
+{%- endif %}
 
 # Run all checks (mirrors CI)
-check: lint typecheck test
+check: lint{% if use_typecheck %} typecheck{% endif %} test
 
 # Lint and check formatting
 lint:
@@ -55,22 +61,31 @@ lint:
 fix:
     uv run ruff check --fix src/ tests/
     uv run ruff format src/ tests/
+{% if use_typecheck %}
 
 # Type check
 typecheck:
     uv run mypy src/
+{% endif %}
 
 # Run tests
 test *args:
     uv run pytest -v {% raw %}{{ args }}{% endraw %}
+{% if testing != 'minimal' %}
 
-# Run tests with coverage (fails if below 80%)
+# Run tests with coverage{% if testing == 'full' %} (fails if below 80%){% endif %}
+
 coverage:
-    uv run pytest --cov=src --cov-report=term-missing --cov-fail-under=80
+    uv run pytest --cov=src --cov-report=term-missing{% if testing == 'full' %} --cov-fail-under=80{% endif %}
+
+{% endif %}
+{% if use_ml %}
 
 # Launch Jupyter notebook server
 notebook:
     uv run jupyter notebook notebooks/
+{% endif %}
+{% if use_docs %}
 
 # Serve documentation locally
 docs:
@@ -79,6 +94,8 @@ docs:
 # Build documentation
 docs-build:
     uv run mkdocs build
+{% endif %}
+{% if use_docker != 'none' %}
 
 # Build Docker image
 docker-build:
@@ -87,10 +104,19 @@ docker-build:
 # Run in Docker
 docker-run:
     docker compose -f docker/docker-compose.yml up
+{% endif %}
+{% if use_docker == 'gpu' %}
+
+# Build GPU Docker image
+docker-build-gpu:
+    docker build -f docker/Dockerfile.gpu -t {{ project_name }}-gpu .
+{% endif %}
+{% if security != 'none' %}
 
 # Audit dependencies for vulnerabilities
 audit:
     uv run pip-audit
+{% endif %}
 
 # Build package
 build:
@@ -103,17 +129,15 @@ release bump:
     just check
     uvx bump-my-version bump {% raw %}{{ bump }}{% endraw %}
     git push --follow-tags
-
-# Build GPU Docker image
-docker-build-gpu:
-    docker build -f docker/Dockerfile.gpu -t {{ project_name }}-gpu .
+{% if use_ml %}
 
 # Initialize DVC (run once)
 dvc-init:
     uv run dvc init
     uv run dvc config core.autostage true
+{% endif %}
 
 # Clean build artifacts
 clean:
-    rm -rf dist/ build/ site/ .pytest_cache/ .mypy_cache/ .ruff_cache/ htmlcov/
+    rm -rf dist/ build/{% if use_docs %} site/{% endif %} .pytest_cache/{% if use_typecheck %} .mypy_cache/{% endif %} .ruff_cache/ htmlcov/
     find . -type d -name __pycache__ -exec rm -rf {} +

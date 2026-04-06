@@ -11,10 +11,14 @@
 ```text
 src/{{ package_name }}/   # Your source code goes here
 tests/                    # Tests (pytest)
+{%- if use_ml %}
 notebooks/                # Jupyter notebooks for exploration
 data/                     # Datasets (gitignored, use DVC for versioning)
+{%- endif %}
 scripts/                  # Standalone scripts (data processing, training, etc.)
+{%- if use_docs %}
 docs/                     # Documentation source (MkDocs)
+{%- endif %}
 ```
 
 ## Development workflow
@@ -22,16 +26,18 @@ docs/                     # Documentation source (MkDocs)
 ### Setup
 
 ```bash
-just setup    # install deps + pre-commit hooks
+just setup    # install deps{% if security != 'none' %} + pre-commit hooks{% endif %}
 ```
 
 ### Daily commands
 
 ```bash
-just check     # run lint + typecheck + test (same as CI)
+just check     # run lint{% if use_typecheck %} + typecheck{% endif %} + test (same as CI)
 just fix       # auto-fix lint and formatting issues
 just test      # run tests only
+{%- if use_docs %}
 just docs      # preview docs locally at http://127.0.0.1:8000/
+{%- endif %}
 ```
 
 ### Adding dependencies
@@ -42,16 +48,17 @@ uv add requests
 
 # Dev dependency
 uv add --group dev httpx
-
+{% if use_ml %}
 # ML optional dependency
 uv add --optional ml numpy
+{% endif %}
 ```
 
 After adding dependencies, `uv.lock` is updated automatically. Commit it for reproducible builds.
 
 ### Writing tests
 
-Tests live in `tests/` and use [pytest](https://docs.pytest.org/). Shared fixtures go in `tests/conftest.py`.
+Tests live in `tests/` and use [pytest](https://docs.pytest.org/).{% if testing != 'minimal' %} Shared fixtures go in `tests/conftest.py`.{% endif %}
 
 ```python
 def test_my_feature() -> None:
@@ -64,8 +71,11 @@ Run specific tests:
 ```bash
 just test -k test_my_feature    # by name
 just test tests/test_main.py    # by file
+{%- if testing != 'minimal' %}
 just coverage                   # with coverage report
+{%- endif %}
 ```
+{% if use_typecheck %}
 
 ### Type annotations
 
@@ -86,12 +96,18 @@ def process_data(path: Path, *, normalize: bool = True) -> pd.DataFrame:
         FileNotFoundError: If the input file doesn't exist.
     """
 ```
-
+{% if use_docs %}
 Docstrings are auto-rendered as [API documentation](api.md) by mkdocstrings.
+{% endif %}
+{% endif %}
 
 ## Next steps
 
 - Add your runtime dependencies to `pyproject.toml`
+{%- if use_docs %}
 - Enable [GitHub Pages](https://docs.github.com/en/pages) for documentation hosting
+{%- endif %}
+{%- if testing != 'minimal' %}
 - Connect [Codecov](https://codecov.io/) for PR coverage reports
+{%- endif %}
 - See [Contributing](contributing.md) for the full development guide
