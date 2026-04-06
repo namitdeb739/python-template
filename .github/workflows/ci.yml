@@ -44,7 +44,7 @@ jobs:
       - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
         with:
           version: "0.11.3"
-          python-version: {% raw %}${{ matrix.python-version }}{% endraw %}
+          python-version: ${{ matrix.python-version }}
       - run: uv sync --dev
       - run: uv run pytest -v --cov=src --cov-report=xml
       - name: Upload coverage to Codecov

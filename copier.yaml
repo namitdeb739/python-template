@@ -43,8 +43,6 @@ init_env:
   help: Create .env from .env.example?
   default: false
 
-_templates_suffix: ""    # render ALL files as Jinja2, not just .jinja
-
 _exclude:
   - copier.yaml
   - .copier-answers.yml
