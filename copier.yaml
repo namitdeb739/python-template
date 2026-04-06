@@ -116,6 +116,27 @@ _tasks:
   # Rename source package directory to match package_name
   - command: mv src/project_name "src/{{ package_name }}"
     when: "{{ package_name != 'project_name' }}"
+  # Remove disabled features
+  - command: rm -rf .devcontainer/
+    when: "{{ not use_devcontainer }}"
+  - command: rm -rf docker/ .dockerignore
+    when: "{{ use_docker == 'none' }}"
+  - command: rm -f docker/Dockerfile.gpu
+    when: "{{ use_docker != 'gpu' and use_docker != 'none' }}"
+  - command: rm -rf docs/ mkdocs.yml
+    when: "{{ not use_docs }}"
+  - command: rm -rf notebooks/ data/ .env.example
+    when: "{{ not use_ml }}"
+  - command: rm -rf .github/workflows/ .github/dependabot.yml
+    when: "{{ not ci_github }}"
+  - command: rm -f .github/workflows/codeql.yml .github/workflows/dependabot-auto-merge.yml .github/dependabot.yml
+    when: "{{ ci_github and security != 'full' }}"
+  - command: rm -f .github/workflows/docs.yml
+    when: "{{ ci_github and not use_docs }}"
+  - command: rm -f .pre-commit-config.yaml
+    when: "{{ security == 'none' }}"
+  - command: rm -f tests/conftest.py tests/test_config.py
+    when: "{{ testing == 'minimal' }}"
   # Initialise git and make initial commit
   - git init
   - git config core.longpaths true
