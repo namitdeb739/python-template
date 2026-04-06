@@ -1,24 +1,64 @@
-.git
-.github/
-.devcontainer/
-.vscode/
+# Version control
+.git/
+.gitignore
+
+# Virtual environments
 .venv/
+venv/
+env/
+
+# Python artifacts
 __pycache__/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-site/
-docs/
-notebooks/
-tests/
-scripts/
-data/
-output/
-dist/
-build/
-htmlcov/
 *.py[cod]
 *.egg-info/
+dist/
+build/
+*.egg
+
+# Tests and coverage
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Dev tooling
+.pre-commit-config.yaml
+.editorconfig
+.mypy_cache/
+.ruff_cache/
+
+# Documentation
+docs/
+site/
+mkdocs.yml
+
+# Notebooks
+notebooks/
+.ipynb_checkpoints/
+
+# Data (mount at runtime instead)
+data/
+output/
+
+# IDE
+.vscode/
+.idea/
+
+# Dev container
+.devcontainer/
+
+# CI/CD
+.github/
+
+# Scripts (not needed in image)
+scripts/
+
+# Environment files
 .env
 .env.*
+
+# Secrets and OS noise
+.secrets
 .DS_Store
+Thumbs.db

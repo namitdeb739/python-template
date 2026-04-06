@@ -33,9 +33,9 @@ typecheck:
 test *args:
     uv run pytest -v {{ args }}
 
-# Run tests with coverage
+# Run tests with coverage (fails if below 80%)
 coverage:
-    uv run pytest --cov=project_name --cov-report=term-missing
+    uv run pytest --cov=src --cov-report=term-missing --cov-fail-under=80
 
 # Launch Jupyter notebook server
 notebook:
