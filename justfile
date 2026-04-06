@@ -16,7 +16,7 @@ init-remote:
     {
       "required_status_checks": {
         "strict": true,
-        "contexts": ["validate-template", "audit"]
+        "contexts": ["lint", "type-check", "test (3.11)", "test (3.12)", "test (3.13)", "audit"]
       },
       "enforce_admins": false,
       "required_pull_request_reviews": null,

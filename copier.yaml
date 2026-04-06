@@ -43,6 +43,8 @@ init_env:
   help: Create .env from .env.example?
   default: false
 
+_templates_suffix: ""    # render ALL files as Jinja2, not just .jinja
+
 _exclude:
   - copier.yaml
   - .copier-answers.yml
@@ -50,7 +52,8 @@ _exclude:
   - .venv/
   - site/
   - uv.lock
-  - README.md          # template description — user README is README.md.jinja
+  - README.md                                # template landing page — user gets README.md.jinja
+  - .github/workflows/validate-template.yml  # template-repo CI only
 
 _tasks:
   # Rename source package directory to match package_name

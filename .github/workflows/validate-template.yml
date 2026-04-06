@@ -1,0 +1,51 @@
+name: Validate Template
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-template:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
+        with:
+          version: "0.11.3"
+          python-version: "3.12"
+      - name: Configure git
+        run: |
+          git config --global user.name "CI"
+          git config --global user.email "ci@test.com"
+      - name: Render template
+        run: |
+          TEMPLATE_DIR=$(mktemp -d)
+          git archive HEAD | tar -C "$TEMPLATE_DIR" -xf -
+          uvx copier copy "$TEMPLATE_DIR" /tmp/rendered-project \
+            --trust \
+            --defaults \
+            --overwrite \
+            --data project_name=my-test-project \
+            --data description="A test project" \
+            --data author_name="Test Author" \
+            --data author_email="test@example.com" \
+            --data github_user=test-user
+      - name: Lint
+        working-directory: /tmp/rendered-project
+        run: |
+          uv run ruff check src/ tests/
+          uv run ruff format --check src/ tests/
+      - name: Type check
+        working-directory: /tmp/rendered-project
+        run: uv run mypy src/
+      - name: Test
+        working-directory: /tmp/rendered-project
+        run: uv run pytest -v --cov=src --cov-report=xml
+      - name: Audit
+        working-directory: /tmp/rendered-project
+        run: uv run pip-audit

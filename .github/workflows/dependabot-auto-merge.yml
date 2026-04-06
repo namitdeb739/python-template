@@ -21,14 +21,14 @@ jobs:
         id: metadata
         uses: dependabot/fetch-metadata@08eff52bf64351f401fb50d4972fa95b9f2c2d1b # v2.4.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: {% raw %}${{ secrets.GITHUB_TOKEN }}{% endraw %}
 
       - name: Evaluate auto-merge policy
         id: policy
         run: |
           set -euo pipefail
-          update_type='${{ steps.metadata.outputs.update-type }}'
-          dependency_type='${{ steps.metadata.outputs.dependency-type }}'
+          update_type='{% raw %}${{ steps.metadata.outputs.update-type }}{% endraw %}'
+          dependency_type='{% raw %}${{ steps.metadata.outputs.dependency-type }}{% endraw %}'
 
           if [[ "$update_type" == "security:update" ]]; then
             echo "allowed=true" >> "$GITHUB_OUTPUT"
@@ -47,12 +47,12 @@ jobs:
         if: steps.policy.outputs.allowed == 'true'
         run: gh pr review --approve "$PR_URL"
         env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: {% raw %}${{ github.event.pull_request.html_url }}{% endraw %}
+          GH_TOKEN: {% raw %}${{ secrets.GITHUB_TOKEN }}{% endraw %}
 
       - name: Enable auto-merge
         if: steps.policy.outputs.allowed == 'true'
         run: gh pr merge --auto --squash "$PR_URL"
         env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: {% raw %}${{ github.event.pull_request.html_url }}{% endraw %}
+          GH_TOKEN: {% raw %}${{ secrets.GITHUB_TOKEN }}{% endraw %}
