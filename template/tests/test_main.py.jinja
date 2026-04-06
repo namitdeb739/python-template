@@ -25,12 +25,14 @@ def test_config_defaults() -> None:
     assert config.data_dir == Path("data")
     assert config.output_dir == Path("output")
 
+{% if testing != 'minimal' %}
 
 def test_config_paths_are_path_objects(sample_config: Config) -> None:
     """Verify __post_init__ coerces strings to Path."""
     assert isinstance(sample_config.data_dir, Path)
     assert isinstance(sample_config.output_dir, Path)
 
+{% endif %}
 
 @pytest.mark.parametrize(
     ("seed", "data_dir", "output_dir"),

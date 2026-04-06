@@ -26,7 +26,7 @@ dev = [
     "mkdocs-material>=9.5",
     "mkdocstrings[python]>=0.25",
 {%- endif %}
-{%- if security == 'full' %}
+{%- if security != 'none' %}
     "pip-audit>=2.7",
 {%- endif %}
     "commitizen>=4.1",
