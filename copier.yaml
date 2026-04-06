@@ -47,18 +47,18 @@ security:
   default: basic
   help: "Security level"
   choices:
-    none: No security tooling
-    basic: Pre-commit hooks + ruff linting
-    full: Basic + CodeQL, pip-audit, Dependabot, branch protection
+    "No security tooling": none
+    "Pre-commit hooks + ruff linting": basic
+    "Basic + CodeQL, pip-audit, Dependabot, branch protection": full
 
 use_docker:
   type: str
   default: cpu
   help: "Docker support"
   choices:
-    none: No Docker
-    cpu: CPU Dockerfile + Compose
-    gpu: CPU + GPU Dockerfile
+    "No Docker": none
+    "CPU Dockerfile + Compose": cpu
+    "CPU + GPU Dockerfile": gpu
 
 use_docs:
   type: bool
@@ -70,9 +70,9 @@ testing:
   default: standard
   help: "Testing level"
   choices:
-    minimal: pytest only
-    standard: pytest + coverage + fixtures
-    full: Standard + coverage threshold + parametrized examples
+    "pytest only": minimal
+    "pytest + coverage + fixtures": standard
+    "Standard + coverage threshold + parametrized examples": full
 
 use_ml:
   type: bool
