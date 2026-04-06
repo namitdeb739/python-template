@@ -43,15 +43,14 @@ init_env:
   help: Create .env from .env.example?
   default: false
 
+_subdirectory: template
+
 _exclude:
-  - copier.yaml
   - .copier-answers.yml
   - .git/
   - .venv/
   - site/
   - uv.lock
-  - README.md                                # template landing page — user gets README.md.jinja
-  - .github/workflows/validate-template.yml  # template-repo CI only
 
 _tasks:
   # Rename source package directory to match package_name
