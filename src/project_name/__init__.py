@@ -1,3 +1,3 @@
-"""project-name - A short description of your project."""
+"""{{ project_name }} - {{ description }}"""
 
 __version__ = "0.1.0"

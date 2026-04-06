@@ -1,0 +1,86 @@
+# Copier template for Python projects
+# Usage: uvx copier copy gh:namitdeb739/python-template <project-dir>
+# Docs:  https://namitdeb739.github.io/python-template
+
+project_name:
+  type: str
+  help: Project name in kebab-case (e.g. my-ml-project)
+  placeholder: my-project
+
+package_name:
+  type: str
+  help: Python package name in snake_case (leave blank to auto-derive)
+  default: "{{ project_name | replace('-', '_') }}"
+  placeholder: my_project
+
+description:
+  type: str
+  help: Short one-line description
+  placeholder: A Python project
+
+author_name:
+  type: str
+  help: Author full name
+  placeholder: Your Name
+
+author_email:
+  type: str
+  help: Author email
+  placeholder: you@example.com
+
+github_user:
+  type: str
+  help: GitHub username or organisation
+  placeholder: your-username
+
+init_dvc:
+  type: bool
+  help: Initialise DVC for data versioning?
+  default: false
+
+init_env:
+  type: bool
+  help: Create .env from .env.example?
+  default: false
+
+_exclude:
+  - copier.yaml
+  - .copier-answers.yml
+  - .git/
+  - .venv/
+  - site/
+  - uv.lock
+  - README.md          # template description — user README is README.md.jinja
+
+_tasks:
+  # Rename source package directory to match package_name
+  - command: mv src/project_name "src/{{ package_name }}"
+    when: "{{ package_name != 'project_name' }}"
+  # Initialise git and make initial commit
+  - git init
+  - git config core.longpaths true
+  - git add -A
+  - "git commit -m 'chore: initial project from template'"
+  # Install dependencies and hooks
+  - uv sync --dev
+  - uv run pre-commit install
+  # Optional extras
+  - command: uv run dvc init && uv run dvc config core.autostage true
+    when: "{{ init_dvc }}"
+  - command: cp .env.example .env
+    when: "{{ init_env }}"
+
+_message_after_copy: |
+
+  Project {{ project_name }} is ready!
+
+  Next steps:
+    cd {{ project_name }}
+    just check                       # verify everything passes
+    gh repo create --public {{ github_user }}/{{ project_name }}
+    git remote add origin https://github.com/{{ github_user }}/{{ project_name }}.git
+    git push -u origin main
+    just init-remote                 # branch protection + GitHub Pages (requires gh CLI)
+
+  Update later:
+    uvx copier update                # pull in template improvements

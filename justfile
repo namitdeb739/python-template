@@ -2,9 +2,40 @@
 default:
     @just --list
 
-# Interactive project setup (run once after cloning from template)
-init:
-    bash scripts/init.sh
+# Set up branch protection and GitHub Pages (run once after pushing to GitHub)
+init-remote:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if ! command -v gh &>/dev/null || ! gh auth status &>/dev/null 2>&1; then
+        echo "gh CLI not found or not authenticated — set up branch protection and GitHub Pages manually"
+        exit 0
+    fi
+    REPO=$(git remote get-url origin 2>/dev/null | sed 's|.*github.com[:/]||;s|\.git$||')
+    BP_JSON=$(mktemp)
+    cat > "$BP_JSON" <<'BPEOF'
+    {
+      "required_status_checks": {
+        "strict": true,
+        "contexts": ["validate-template", "audit"]
+      },
+      "enforce_admins": false,
+      "required_pull_request_reviews": null,
+      "restrictions": null,
+      "allow_force_pushes": false,
+      "allow_deletions": false
+    }
+    BPEOF
+    if gh api "repos/${REPO}/branches/main/protection" -X PUT --silent --input "$BP_JSON" 2>/dev/null; then
+        echo "✓ Branch protection enabled on main"
+    else
+        echo "⚠ Could not set branch protection (check gh auth permissions)"
+    fi
+    rm -f "$BP_JSON"
+    if gh api "repos/${REPO}/pages" -X POST -f build_type=workflow --silent 2>/dev/null; then
+        echo "✓ GitHub Pages enabled (Actions source)"
+    else
+        echo "⚠ Could not enable GitHub Pages (may already be enabled, or enable manually in Settings > Pages)"
+    fi
 
 # Install dependencies and set up dev environment
 setup:
@@ -31,7 +62,7 @@ typecheck:
 
 # Run tests
 test *args:
-    uv run pytest -v {{ args }}
+    uv run pytest -v {% raw %}{{ args }}{% endraw %}
 
 # Run tests with coverage (fails if below 80%)
 coverage:
@@ -70,12 +101,12 @@ release bump:
     #!/usr/bin/env bash
     set -euo pipefail
     just check
-    uvx bump-my-version bump {{ bump }}
+    uvx bump-my-version bump {% raw %}{{ bump }}{% endraw %}
     git push --follow-tags
 
 # Build GPU Docker image
 docker-build-gpu:
-    docker build -f docker/Dockerfile.gpu -t project-name-gpu .
+    docker build -f docker/Dockerfile.gpu -t {{ project_name }}-gpu .
 
 # Initialize DVC (run once)
 dvc-init:

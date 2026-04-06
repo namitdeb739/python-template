@@ -30,14 +30,14 @@ uv sync --extra ml
 | `notebooks/` | Jupyter notebooks for exploration and prototyping |
 | `data/` | Datasets (gitignored by default: use DVC for versioning) |
 | `scripts/` | Standalone scripts for data processing, training, evaluation |
-| `src/project_name/config.py` | Typed dataclass configuration |
+| `src/{{ package_name }}/config.py` | Typed dataclass configuration |
 
 ## Configuration
 
 `config.py` provides a typed, dataclass-based config pattern:
 
 ```python
-from project_name.config import Config
+from {{ package_name }}.config import Config
 
 config = Config(seed=42, data_dir="data/processed")
 ```

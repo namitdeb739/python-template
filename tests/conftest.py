@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from project_name.config import Config
+from {{ package_name }}.config import Config
 
 if TYPE_CHECKING:
     from pathlib import Path

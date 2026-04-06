@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is a Python project using **uv** for dependency management and **just** as a task runner. Source lives under `src/project_name/` (src layout). Configuration is via typed dataclasses in `src/project_name/config.py`.
+This is a Python project using **uv** for dependency management and **just** as a task runner. Source lives under `src/{{ package_name }}/` (src layout). Configuration is via typed dataclasses in `src/{{ package_name }}/config.py`.
 
 ## Key Commands
 
@@ -28,10 +28,10 @@ just release patch|minor|major  # bump version, tag, push
 ## Architecture Patterns
 
 - **Config**: `dataclasses.dataclass` in `config.py` — no Pydantic, no env parsing at import time. `__post_init__` converts `Path` fields.
-- **Entry point**: `src/project_name/main.py` — CLI wired via `[project.scripts]` in `pyproject.toml`
+- **Entry point**: `src/{{ package_name }}/main.py` — CLI wired via `[project.scripts]` in `pyproject.toml`
 - **Tests**: pytest, fixtures in `tests/conftest.py`, parametrize for data-driven cases
 - **Docs**: MkDocs Material + mkdocstrings — docstrings drive the API reference page
-- Keep reusable production logic in `src/project_name/`, not in notebooks
+- Keep reusable production logic in `src/{{ package_name }}/`, not in notebooks
 - Keep exploratory work in `notebooks/` and standalone utilities in `scripts/`
 - Treat `data/` as gitignored/DVC-ready data storage
 

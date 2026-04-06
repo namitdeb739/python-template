@@ -15,7 +15,7 @@ The `Dockerfile` is structured for fast rebuilds and safer runtime defaults:
 2. Installs dependencies first (`uv sync --no-dev --no-install-project`): cached unless `pyproject.toml` or `uv.lock` change
 3. Copies `README.md` and source, then installs the project
 4. Drops privileges to a non-root `app` user before runtime
-5. Runs via `uv run project-name`
+5. Runs via `uv run {{ project_name }}`
 
 The `docker-compose.yml` uses the repo root as build context and mounts `data/` as a volume with `PYTHONUNBUFFERED=1`. A root-level `.dockerignore` excludes docs, test artifacts, and local environment files from the build context.
 
@@ -24,7 +24,7 @@ The `docker-compose.yml` uses the repo root as build context and mounts `data/` 
 A separate `docker/Dockerfile.gpu` is included for ML workloads requiring CUDA:
 
 ```bash
-just docker-build-gpu    # or: docker build -f docker/Dockerfile.gpu -t project-name-gpu .
+just docker-build-gpu    # or: docker build -f docker/Dockerfile.gpu -t {{ project_name }}-gpu .
 ```
 
 Uses `nvidia/cuda:12.4.1-runtime-ubuntu22.04` with Python 3.11 from the deadsnakes PPA. Installs `[ml]` extras automatically.

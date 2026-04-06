@@ -6,43 +6,24 @@
 - **[uv](https://docs.astral.sh/uv/getting-started/installation/)**: fast Python package manager
 - **[just](https://github.com/casey/just#installation)**: task runner (optional but recommended)
 
-## Creating a new project
-
-1. Click **"Use this template"** on the [GitHub repo](https://github.com/your-username/your-repo)
-2. Clone your new repo and run the interactive setup:
-
-```bash
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
-just init
-```
-
-The setup script will prompt for your project name, description, and author info, then configure everything automatically.
-
-## Verify placeholder replacement
-
-`just init` replaces common template placeholders. Before your first release, run:
-
-```bash
-rg -n "project-name|project_name|your-username|your-repo|your-email@example.com"
-```
-
-Any remaining matches should be updated manually.
-
 ## Project layout
 
-After setup, your project looks like:
-
 ```text
-src/your_package/     # Your source code goes here
-tests/                # Tests (pytest)
-notebooks/            # Jupyter notebooks for exploration
-data/                 # Datasets (gitignored, use DVC for versioning)
-scripts/              # Standalone scripts (data processing, training, etc.)
-docs/                 # Documentation source (MkDocs)
+src/{{ package_name }}/   # Your source code goes here
+tests/                    # Tests (pytest)
+notebooks/                # Jupyter notebooks for exploration
+data/                     # Datasets (gitignored, use DVC for versioning)
+scripts/                  # Standalone scripts (data processing, training, etc.)
+docs/                     # Documentation source (MkDocs)
 ```
 
 ## Development workflow
+
+### Setup
+
+```bash
+just setup    # install deps + pre-commit hooks
+```
 
 ### Daily commands
 

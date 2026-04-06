@@ -16,4 +16,4 @@ RUN uv sync --no-dev
 RUN chown -R app:app /app
 USER app
 
-CMD ["uv", "run", "project-name"]
+CMD ["uv", "run", "{{ project_name }}"]

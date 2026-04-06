@@ -2,7 +2,7 @@
 
 ## Version bumping
 
-The template uses [bump-my-version](https://github.com/callowayproject/bump-my-version) to keep version numbers in sync across `pyproject.toml`, `src/project_name/__init__.py`, and `[tool.commitizen]`:
+The template uses [bump-my-version](https://github.com/callowayproject/bump-my-version) to keep version numbers in sync across `pyproject.toml`, `src/{{ package_name }}/__init__.py`, and `[tool.commitizen]`:
 
 ```bash
 just release patch    # 0.1.0 → 0.1.1
@@ -25,7 +25,7 @@ Create a [GitHub Release](https://docs.github.com/en/repositories/releasing-proj
 ### One-time PyPI setup
 
 1. Go to [pypi.org](https://pypi.org) → your project → Publishing → Add a new publisher
-2. Enter: repo `your-username/your-repo`, workflow `publish.yml`, environment `pypi`
+2. Enter: repo `{{ github_user }}/{{ project_name }}`, workflow `publish.yml`, environment `pypi`
 
 No API tokens needed: trusted publishers use OIDC for authentication.
 

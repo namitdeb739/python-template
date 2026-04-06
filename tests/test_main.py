@@ -1,4 +1,4 @@
-"""Tests for project_name.main and project_name.config."""
+"""Tests for {{ package_name }}.main and {{ package_name }}.config."""
 
 from __future__ import annotations
 
@@ -6,14 +6,14 @@ from pathlib import Path
 
 import pytest
 
-from project_name.config import Config
-from project_name.main import main
+from {{ package_name }}.config import Config
+from {{ package_name }}.main import main
 
 
 def test_main_prints_greeting(capsys: pytest.CaptureFixture[str]) -> None:
     main()
     captured = capsys.readouterr()
-    assert captured.out == "Hello from project-name!\n"
+    assert captured.out == "Hello from {{ project_name }}!\n"
 
 
 # --- Config tests ---

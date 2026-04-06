@@ -1,7 +1,7 @@
-site_name: project-name
-site_description: A short description of your project
-repo_url: https://github.com/your-username/your-repo
-repo_name: your-username/your-repo
+site_name: {{ project_name }}
+site_description: {{ description }}
+repo_url: https://github.com/{{ github_user }}/{{ project_name }}
+repo_name: {{ github_user }}/{{ project_name }}
 
 theme:
   name: material

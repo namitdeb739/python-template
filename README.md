@@ -2,107 +2,83 @@
 
 [![CI](https://github.com/namitdeb739/python-template/actions/workflows/ci.yml/badge.svg)](https://github.com/namitdeb739/python-template/actions/workflows/ci.yml)
 [![Docs](https://github.com/namitdeb739/python-template/actions/workflows/docs.yml/badge.svg)](https://namitdeb739.github.io/python-template/)
-[![CodeQL](https://github.com/namitdeb739/python-template/actions/workflows/codeql.yml/badge.svg)](https://github.com/namitdeb739/python-template/actions/workflows/codeql.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 
-A modern, batteries-included Python project template with [uv](https://docs.astral.sh/uv/), [ruff](https://docs.astral.sh/ruff/), and ML-ready structure. Click **"Use this template"** on GitHub to create a new repository.
+A modern, batteries-included Python project template powered by [Copier](https://copier.readthedocs.io/).
 
-## Features
+## Quickstart
+
+**Prerequisites:** [uv](https://docs.astral.sh/uv/getting-started/installation/) and [just](https://github.com/casey/just#installation)
+
+```bash
+uvx copier copy gh:namitdeb739/python-template my-project
+cd my-project
+```
+
+That's it. Copier prompts for project name, description, and author, then scaffolds a complete Python project with git history, dependencies installed, and pre-commit hooks active.
+
+## What you get
 
 ### Development
-
 - [uv](https://docs.astral.sh/uv/) package management | [ruff](https://docs.astral.sh/ruff/) linting & formatting | [mypy](https://mypy.readthedocs.io/) strict type checking
-- [pytest](https://docs.pytest.org/) + coverage | [pre-commit](https://pre-commit.com/) hooks | [just](https://github.com/casey/just) task runner
+- [pytest](https://docs.pytest.org/) + coverage (80% threshold) | [pre-commit](https://pre-commit.com/) hooks | [just](https://github.com/casey/just) task runner
 
 ### CI/CD & Security
-
-- GitHub Actions CI (lint, typecheck, test matrix, dependency audit)
+- GitHub Actions CI: lint, typecheck, test matrix (3.11–3.13), dependency audit
 - [CodeQL](https://codeql.github.com/) scanning | [pip-audit](https://github.com/pypa/pip-audit) | [Dependabot](https://docs.github.com/en/code-security/dependabot) | [Codecov](https://codecov.io/)
 - [Conventional Commits](https://www.conventionalcommits.org/) enforced on commits and PR titles
-- Branch protection with required status checks (auto-configured)
 
 ### Documentation & Publishing
-
 - [MkDocs Material](https://squidfunk.github.io/mkdocs-material/) with auto-deploy to GitHub Pages
 - [mkdocstrings](https://mkdocstrings.github.io/) for API docs from docstrings
 - PyPI publishing via trusted publishers | version bumping via [bump-my-version](https://github.com/callowayproject/bump-my-version)
 
 ### ML-Ready
-
-- Optional ML dependency group | typed dataclass config | notebooks, data, scripts directories
+- Optional ML dependency group | typed dataclass `Config` | notebooks, data, scripts directories
 - Docker support (CPU + GPU variants) | DVC data versioning | `.env` template for API keys
 
 ### Developer Experience
-
 - [Dev Containers](https://containers.dev/) for GitHub Codespaces / VS Code
 - VS Code settings + recommended extensions | `.editorconfig`
-- Issue templates (YAML forms) | PR template with checklist
+- [Copilot instructions](https://docs.github.com/en/copilot) pre-configured | issue templates | PR template
 
-## Quickstart
-
-**Prerequisites:** [uv](https://docs.astral.sh/uv/getting-started/installation/) and optionally [just](https://github.com/casey/just#installation)
+## After scaffolding
 
 ```bash
-# 1. Create repo from template (click "Use this template" on GitHub)
-# 2. Clone and run interactive setup:
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
-just init
+just check                     # verify everything passes
+
+# Push to GitHub and enable branch protection + Pages:
+gh repo create --public your-username/your-project
+git remote add origin https://github.com/your-username/your-project.git
+git push -u origin main
+just init-remote               # requires gh CLI authenticated
 ```
 
-The setup script prompts for project name, description, author, and GitHub username, then automatically renames all references, installs dependencies, configures pre-commit hooks, enables branch protection, and enables GitHub Pages.
-
-## Template setup checklist
-
-After running `just init`, verify that no template placeholders remain:
+## Pull in template improvements
 
 ```bash
-rg -n "project-name|project_name|your-username|your-repo|your-email@example.com"
-```
-
-If this command returns matches, update those files before your first release.
-
-## Common commands
-
-```bash
-just check       # run lint + typecheck + test (mirrors CI)
-just fix         # auto-fix lint and formatting
-just test        # run tests (just test -k foo for specific)
-just docs        # preview docs at http://127.0.0.1:8000/
-just release X   # bump version (patch/minor/major), tag, push
-just             # list all available recipes
+uvx copier update              # re-run from within an existing project
 ```
 
 ## Project structure
 
 ```text
-src/project_name/       Source package (src layout)
-tests/                  Test suite (pytest)
-docs/                   Documentation (MkDocs Material)
-notebooks/              Jupyter notebooks
-data/                   Datasets (gitignored, DVC-ready)
-scripts/                Standalone scripts
-docker/                 Dockerfile (CPU), Dockerfile.gpu, docker-compose
-.github/                Workflows, issue/PR templates, CODEOWNERS, Dependabot
-.devcontainer/          GitHub Codespaces / VS Code dev container
-.vscode/                Editor settings + recommended extensions
+my-project/
+├── src/my_package/        Source package (src layout)
+├── tests/                 pytest test suite
+├── docs/                  MkDocs documentation source
+├── notebooks/             Jupyter notebooks
+├── data/                  Datasets (gitignored, DVC-ready)
+├── docker/                CPU + GPU Dockerfiles, docker-compose
+├── scripts/               Standalone utility scripts
+├── .github/               CI workflows, issue templates, CODEOWNERS
+└── .devcontainer/         GitHub Codespaces / VS Code dev container
 ```
 
-## Documentation
+## Template docs
 
-Full documentation is available at the [docs site](https://your-username.github.io/your-repo/):
-
-- [Getting Started](docs/getting-started.md): setup, development workflow, adding dependencies
-- [CI/CD & Infrastructure](docs/ci-cd.md): pipelines, security scanning, publishing, Dependabot
-- [Docker](docs/docker.md): CPU/GPU builds, docker-compose
-- [ML Setup](docs/ml-setup.md): config pattern, DVC, environment variables, GPU support
-- [Releasing](docs/releasing.md): version bumping, PyPI publishing
-- [API Reference](docs/api.md): auto-generated from docstrings
-- [Contributing](docs/contributing.md): code style, testing, commit conventions
-- [Changelog](docs/changelog.md)
+Full documentation: [namitdeb739.github.io/python-template](https://namitdeb739.github.io/python-template/)
 
 ## License
 

@@ -17,7 +17,7 @@ Workflows pin third-party and first-party GitHub Actions to immutable commit SHA
 
 ## Docs deploy (`docs.yml`)
 
-On push to `main`, builds the MkDocs site and deploys to GitHub Pages. `just init` enables Pages automatically.
+On push to `main`, builds the MkDocs site and deploys to GitHub Pages. `just init-remote` enables Pages automatically.
 
 ## Standards enforcement
 
@@ -41,7 +41,7 @@ Valid types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`
 
 ## Branch protection
 
-`just init` automatically configures branch protection on `main`:
+`just init-remote` automatically configures branch protection on `main`:
 
 - **Required status checks**: lint, type-check, test (3.11/3.12/3.13), audit, validate
 - **Require up-to-date branches** before merge
@@ -57,7 +57,7 @@ Valid types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`
 Triggers on GitHub Releases using [trusted publishers](https://docs.pypi.org/trusted-publishers/) (no API tokens):
 
 1. Go to [pypi.org](https://pypi.org) → your project → Publishing → Add a new publisher
-2. Enter: repo `your-username/your-repo`, workflow `publish.yml`, environment `pypi`
+2. Enter: repo `{{ github_user }}/{{ project_name }}`, workflow `publish.yml`, environment `pypi`
 3. Create a GitHub Release: builds with `uv build` and publishes automatically
 
 ## Dependabot (`dependabot.yml`)

@@ -4,8 +4,8 @@ Auto-generated from docstrings using [mkdocstrings](https://mkdocstrings.github.
 
 ## Main
 
-::: project_name.main
+::: {{ package_name }}.main
 
 ## Config
 
-::: project_name.config
+::: {{ package_name }}.config
