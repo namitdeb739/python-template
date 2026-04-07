@@ -4,7 +4,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A batteries-included Python project template powered by [Copier](https://copier.readthedocs.io/). Pick the features you need — skip the ones you don't.
+A batteries-included Python project template powered by [Copier](https://copier.readthedocs.io/). Pick the features you need, skip the ones you don't.
 
 ## Quickstart
 
@@ -40,11 +40,11 @@ uvx copier copy --defaults gh:namitdeb739/python-template my-project
 
 ## What's included
 
-**Tooling** — [uv](https://docs.astral.sh/uv/) · [ruff](https://docs.astral.sh/ruff/) · [mypy](https://mypy.readthedocs.io/) · [pytest](https://docs.pytest.org/) · [pre-commit](https://pre-commit.com/) · [just](https://github.com/casey/just)
+**Tooling:** [uv](https://docs.astral.sh/uv/) · [ruff](https://docs.astral.sh/ruff/) · [mypy](https://mypy.readthedocs.io/) · [pytest](https://docs.pytest.org/) · [pre-commit](https://pre-commit.com/) · [just](https://github.com/casey/just)
 
-**CI/CD** — lint, type-check, test matrix, dependency audit, [Conventional Commits](https://www.conventionalcommits.org/) enforced on commits and PR titles, trusted-publisher PyPI release
+**CI/CD:** lint, type-check, test matrix, dependency audit, [Conventional Commits](https://www.conventionalcommits.org/) enforced on commits and PR titles, trusted-publisher PyPI release
 
-**Optional** — [CodeQL](https://codeql.github.com/) · [Dependabot](https://docs.github.com/en/code-security/dependabot) · [MkDocs Material](https://squidfunk.github.io/mkdocs-material/) · Docker (CPU + GPU) · [DVC](https://dvc.org/)
+**Optional:** [CodeQL](https://codeql.github.com/) · [Dependabot](https://docs.github.com/en/code-security/dependabot) · [MkDocs Material](https://squidfunk.github.io/mkdocs-material/) · Docker (CPU + GPU) · [DVC](https://dvc.org/)
 
 ## After scaffolding
 
