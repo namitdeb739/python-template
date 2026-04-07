@@ -89,6 +89,11 @@ use_devcontainer:
   default: false
   help: Include VS Code dev container config?
 
+use_iot:
+  type: bool
+  default: false
+  help: Include IoT/embedded setup (serial, GPIO, MQTT drivers, device config)?
+
 # --- Post-setup options ---
 
 init_dvc:
@@ -119,6 +124,10 @@ _tasks:
   # Remove disabled features
   - command: rm -rf .devcontainer/
     when: "{{ not use_devcontainer }}"
+  - command: rm -rf "src/{{ package_name }}/drivers/" "src/{{ package_name }}/sensors/" config/
+    when: "{{ not use_iot }}"
+  - command: rm -f tests/test_drivers.py
+    when: "{{ not use_iot }}"
   - command: rm -rf docker/ .dockerignore
     when: "{{ use_docker == 'none' }}"
   - command: rm -f docker/Dockerfile.gpu

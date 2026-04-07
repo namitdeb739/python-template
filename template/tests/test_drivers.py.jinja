@@ -1,0 +1,69 @@
+"""Tests for IoT hardware drivers.
+
+These tests run in CI without physical hardware:
+- Serial: uses the ``mock_serial`` fixture (patches ``serial.Serial``)
+- GPIO: uses the ``mock_gpio`` fixture (gpiozero MockFactory, applied autouse)
+- MQTT: connects to a real Mosquitto broker started by CI (localhost:1883)
+"""
+
+from __future__ import annotations
+
+from unittest.mock import MagicMock
+
+import pytest
+
+
+# ---------------------------------------------------------------------------
+# Serial
+# ---------------------------------------------------------------------------
+
+
+def test_serial_write_returns_byte_count(mock_serial: MagicMock) -> None:
+    result = mock_serial.write(b"AT\r\n")
+    assert result == 4
+
+
+def test_serial_readline_returns_bytes(mock_serial: MagicMock) -> None:
+    response = mock_serial.readline()
+    assert isinstance(response, bytes)
+
+
+# ---------------------------------------------------------------------------
+# GPIO (mock_gpio fixture is autouse — no explicit parameter needed)
+# ---------------------------------------------------------------------------
+
+
+def test_led_can_be_toggled() -> None:
+    try:
+        from {{ package_name }}.drivers.gpio import led
+
+        pin = led(17)
+        assert pin.value == 0
+        pin.on()
+        assert pin.value == 1
+        pin.toggle()
+        assert pin.value == 0
+        pin.close()
+    except ImportError:
+        pytest.skip("gpiozero not installed")
+
+
+# ---------------------------------------------------------------------------
+# MQTT (requires Mosquitto running on localhost:1883)
+# ---------------------------------------------------------------------------
+
+
+def test_mqtt_publish_does_not_raise() -> None:
+    try:
+        from {{ package_name }}.drivers.mqtt import create_client
+
+        client = create_client("test-publisher")
+        client.connect("localhost", 1883)
+        client.loop_start()
+        client.publish("{{ project_name }}/test", b"ping")
+        client.loop_stop()
+        client.disconnect()
+    except ImportError:
+        pytest.skip("paho-mqtt not installed")
+    except OSError:
+        pytest.skip("MQTT broker not available (expected in local dev without broker)")

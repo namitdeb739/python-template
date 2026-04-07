@@ -8,6 +8,7 @@ as the codebase grows.
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -15,6 +16,7 @@ from {{ package_name }}.config import Config
 
 if TYPE_CHECKING:
     from pathlib import Path
+    from collections.abc import Generator
 
 
 @pytest.fixture
@@ -33,3 +35,42 @@ def data_dir(tmp_path: Path) -> Path:
     d = tmp_path / "data"
     d.mkdir()
     return d
+{% if use_iot %}
+
+
+# ---------------------------------------------------------------------------
+# IoT fixtures
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def mock_serial() -> Generator[MagicMock, None, None]:
+    """Mock serial.Serial so serial tests run without hardware attached."""
+    from unittest.mock import patch
+
+    with patch("serial.Serial") as mock_cls:
+        instance = mock_cls.return_value.__enter__.return_value = mock_cls.return_value
+        instance.readline.return_value = b"OK\r\n"
+        instance.read.return_value = b"\x00"
+        instance.write.return_value = 4
+        instance.is_open = True
+        yield instance
+
+
+@pytest.fixture(autouse=True)
+def mock_gpio() -> Generator[None, None, None]:
+    """Replace gpiozero pin factory with MockFactory for all tests.
+
+    This means GPIO tests run in CI without any physical hardware.
+    To test with real hardware, remove this fixture or override it locally.
+    """
+    try:
+        from gpiozero import Device
+        from gpiozero.pins.mock import MockFactory
+
+        original = Device.pin_factory
+        Device.pin_factory = MockFactory()
+        yield
+        Device.pin_factory = original
+    except ImportError:
+        yield  # gpiozero not installed; skip silently
+{% endif %}

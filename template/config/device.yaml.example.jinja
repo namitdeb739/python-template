@@ -1,0 +1,25 @@
+# Device configuration for {{ project_name }}
+#
+# Copy to config/device.yaml and fill in your values.
+# device.yaml is gitignored — never commit real device addresses or secrets.
+
+mqtt:
+  host: 192.168.1.100        # broker IP or hostname
+  port: 1883
+  client_id: {{ project_name }}-device
+  topics:
+    telemetry: "{{ project_name }}/telemetry"
+    commands:  "{{ project_name }}/commands"
+
+serial:
+  # Linux: /dev/ttyUSB0 or /dev/ttyAMA0 (UART on Pi GPIO header)
+  # macOS: /dev/cu.usbserial-XXXX
+  # Windows: COM3
+  port: /dev/ttyUSB0
+  baudrate: 115200
+  timeout: 1.0               # seconds
+
+gpio:
+  # BCM (Broadcom) pin numbers — not physical board numbers
+  led_pin: 17
+  button_pin: 27

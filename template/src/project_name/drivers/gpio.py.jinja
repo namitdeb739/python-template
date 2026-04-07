@@ -1,0 +1,58 @@
+"""GPIO driver — digital I/O abstraction via gpiozero.
+
+gpiozero ships a :class:`~gpiozero.pins.mock.MockFactory` that replaces real
+hardware in CI.  The ``mock_gpio`` fixture in ``conftest.py`` activates it
+automatically for all tests — no extra setup needed.
+"""
+
+from __future__ import annotations
+
+from typing import Protocol
+
+
+class DigitalOutput(Protocol):
+    """Abstract digital output pin (LED, relay, buzzer …)."""
+
+    @property
+    def value(self) -> int: ...
+    def on(self) -> None: ...
+    def off(self) -> None: ...
+    def toggle(self) -> None: ...
+    def close(self) -> None: ...
+
+
+class DigitalInput(Protocol):
+    """Abstract digital input pin (button, switch, sensor …)."""
+
+    @property
+    def value(self) -> int: ...
+    def close(self) -> None: ...
+
+
+def led(pin: int) -> DigitalOutput:
+    """Create a digital output on a BCM pin number.
+
+    Args:
+        pin: BCM pin number (e.g. ``17``).
+
+    Returns:
+        A :class:`DigitalOutput` backed by :class:`~gpiozero.LED`.
+    """
+    from gpiozero import LED  # type: ignore[import-untyped]
+
+    return LED(pin)  # type: ignore[return-value]
+
+
+def button(pin: int, pull_up: bool = True) -> DigitalInput:
+    """Create a digital input on a BCM pin number.
+
+    Args:
+        pin: BCM pin number (e.g. ``27``).
+        pull_up: Use internal pull-up resistor. Set to ``False`` for pull-down.
+
+    Returns:
+        A :class:`DigitalInput` backed by :class:`~gpiozero.Button`.
+    """
+    from gpiozero import Button  # type: ignore[import-untyped]
+
+    return Button(pin, pull_up=pull_up)  # type: ignore[return-value]

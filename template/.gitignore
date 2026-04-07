@@ -52,6 +52,9 @@ output/
 .env
 .env.local
 
+# Device configuration (contains local IPs, pin numbers — not committed)
+config/device.yaml
+
 # OS
 .DS_Store
 Thumbs.db

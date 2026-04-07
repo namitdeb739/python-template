@@ -1,0 +1,45 @@
+"""MQTT driver — publish/subscribe messaging via paho-mqtt.
+
+Use the :class:`MQTTClient` Protocol as the type annotation throughout the
+codebase.  Pass a real :func:`create_client` in production and a
+:class:`unittest.mock.MagicMock` in tests.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Callable
+from typing import Protocol
+
+
+MessageCallback = Callable[[str, bytes], None]
+
+
+class MQTTClient(Protocol):
+    """Abstract MQTT client interface."""
+
+    def connect(self, host: str, port: int = 1883) -> None: ...
+    def disconnect(self) -> None: ...
+    def publish(self, topic: str, payload: str | bytes) -> None: ...
+    def loop_start(self) -> None: ...
+    def loop_stop(self) -> None: ...
+
+
+def create_client(client_id: str = "") -> MQTTClient:
+    """Create a paho-mqtt client satisfying :class:`MQTTClient`.
+
+    Args:
+        client_id: Optional client identifier. Auto-generated if empty.
+
+    Returns:
+        A configured paho MQTT client (not yet connected).
+
+    Example::
+
+        client = create_client("{{ project_name }}-device")
+        client.connect("192.168.1.100")
+        client.loop_start()
+        client.publish("{{ project_name }}/telemetry", '{"temp": 21.5}')
+    """
+    import paho.mqtt.client as mqtt  # type: ignore[import-untyped]
+
+    return mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=client_id)  # type: ignore[return-value]

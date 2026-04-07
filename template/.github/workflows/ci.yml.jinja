@@ -48,6 +48,13 @@ jobs:
           version: "0.11.3"
           python-version: ${{ '{{' }} matrix.python-version {{ '}}' }}
       - run: uv sync --dev
+{%- if use_iot %}
+      - name: Start MQTT broker
+        run: |
+          docker run -d --name mosquitto -p 1883:1883 eclipse-mosquitto:2 \
+            sh -c 'printf "allow_anonymous true\nlistener 1883\n" > /tmp/m.conf && mosquitto -c /tmp/m.conf'
+          sleep 2
+{%- endif %}
       - run: uv run pytest -v{% if testing != 'minimal' %} --cov=src --cov-report=xml{% endif %}
 
 {%- if testing != 'minimal' %}

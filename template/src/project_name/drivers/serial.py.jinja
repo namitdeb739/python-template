@@ -1,0 +1,41 @@
+"""Serial port driver — UART communication abstraction.
+
+Define all serial interactions through the :class:`SerialPort` Protocol so
+tests can swap in a mock without touching production code paths.
+"""
+
+from __future__ import annotations
+
+from typing import Protocol
+
+
+class SerialPort(Protocol):
+    """Abstract serial port interface."""
+
+    def write(self, data: bytes) -> int: ...
+    def read(self, size: int) -> bytes: ...
+    def readline(self) -> bytes: ...
+    def close(self) -> None: ...
+
+
+def open_serial(port: str, baudrate: int = 115200, timeout: float = 1.0) -> SerialPort:
+    """Open a real serial port.
+
+    Args:
+        port: Device path — e.g. ``/dev/ttyUSB0``, ``/dev/ttyAMA0``, or ``COM3``.
+        baudrate: Communication speed in bits/second.
+        timeout: Read timeout in seconds.
+
+    Returns:
+        An open :class:`SerialPort`.
+
+    Example::
+
+        port = open_serial("/dev/ttyUSB0", baudrate=9600)
+        port.write(b"AT\\r\\n")
+        response = port.readline()
+        port.close()
+    """
+    import serial  # pyserial — imported lazily so tests don't require hardware
+
+    return serial.Serial(port, baudrate=baudrate, timeout=timeout)  # type: ignore[return-value]

@@ -32,9 +32,10 @@ dev = [
     "commitizen>=4.1",
     "copier>=9.0",
 ]
-{% if use_ml %}
+{% if use_ml or use_iot %}
 
 [project.optional-dependencies]
+{%- if use_ml %}
 ml = [
     # Uncomment the libraries you need:
     # "numpy>=1.26",
@@ -45,6 +46,16 @@ ml = [
     # "transformers>=4.40",
     # "dvc>=3.50",
 ]
+{%- endif %}
+{%- if use_iot %}
+iot = [
+    "pyserial>=3.5",     # UART / serial communication
+    "paho-mqtt>=2.0",    # MQTT messaging
+    "gpiozero>=2.0",     # GPIO abstraction with built-in mock support
+    "smbus2>=0.5",       # I2C sensor communication
+    "bleak>=0.21",       # Bluetooth LE (async, cross-platform)
+]
+{%- endif %}
 {% endif %}
 
 [project.scripts]

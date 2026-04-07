@@ -137,6 +137,20 @@ dvc-init:
     uv run dvc config core.autostage true
 {% endif %}
 
+{% if use_iot %}
+{% if use_docker == 'none' %}
+# Deploy to device over SSH (rsync src + restart systemd service)
+deploy host:
+    rsync -av src/ pi@{{ '{{' }}host{{ '}}' }}:/opt/{{ project_name }}/src/
+    ssh pi@{{ '{{' }}host{{ '}}' }} sudo systemctl restart {{ project_name }}
+{% else %}
+# Deploy Docker image to device (pull latest and restart)
+deploy host tag="latest":
+    ssh pi@{{ '{{' }}host{{ '}}' }} docker pull ghcr.io/{{ github_user }}/{{ project_name }}:{{ '{{' }}tag{{ '}}' }}
+    ssh pi@{{ '{{' }}host{{ '}}' }} docker compose -f /opt/{{ project_name }}/docker-compose.yml up -d
+{% endif %}
+{% endif %}
+
 # Clean build artifacts
 clean:
     rm -rf dist/ build/{% if use_docs %} site/{% endif %} .pytest_cache/{% if use_typecheck %} .mypy_cache/{% endif %} .ruff_cache/ htmlcov/
