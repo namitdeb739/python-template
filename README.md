@@ -4,69 +4,66 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A configurable Python project template powered by [Copier](https://copier.readthedocs.io/). Choose exactly which features you need.
+A batteries-included Python project template powered by [Copier](https://copier.readthedocs.io/). Pick the features you need — skip the ones you don't.
 
 ## Quickstart
 
-**Prerequisites:** [uv](https://docs.astral.sh/uv/getting-started/installation/) and [just](https://github.com/casey/just#installation)
+**Requires:** [uv](https://docs.astral.sh/uv/getting-started/installation/) and [just](https://github.com/casey/just#installation)
 
 ```bash
 uvx copier copy gh:namitdeb739/python-template my-project
 cd my-project
 ```
 
-Copier prompts for project name, author, and feature choices, then scaffolds a project with only what you selected.
+Copier prompts for your project name, author details, and feature choices. Answer the questions (or hit Enter for defaults) and you're done.
 
-## Configuration options
+## Features
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `ci_github` | bool | `true` | GitHub Actions CI/CD workflows |
-| `security` | choice | `basic` | `none` / `basic` (pre-commit, ruff) / `full` (+ CodeQL, pip-audit, Dependabot) |
-| `use_docker` | choice | `cpu` | `none` / `cpu` (Dockerfile + Compose) / `gpu` (+ GPU Dockerfile) |
-| `use_docs` | bool | `true` | MkDocs Material documentation + GitHub Pages deploy |
-| `testing` | choice | `standard` | `minimal` (pytest) / `standard` (+ coverage, fixtures) / `full` (+ 80% threshold) |
-| `use_ml` | bool | `false` | ML extras: notebooks, data dir, optional deps, DVC, .env template |
-| `use_typecheck` | bool | `true` | mypy strict type checking |
-| `use_devcontainer` | bool | `false` | VS Code / GitHub Codespaces dev container |
+All features are opt-in or opt-out at generation time:
 
-Use `--defaults` to skip prompts and get the standard setup (CI, basic security, CPU docker, docs, standard testing, typecheck).
+| Option | Default | What it adds |
+|---|---|---|
+| `ci_github` | `true` | GitHub Actions workflows: lint, type-check, test (3.11–3.13), audit |
+| `security` | `basic` | `none` · `basic` (pre-commit, ruff) · `full` (+ CodeQL, pip-audit, Dependabot) |
+| `use_docker` | `cpu` | `none` · `cpu` (Dockerfile + Compose) · `gpu` (+ GPU variant) |
+| `use_docs` | `true` | MkDocs Material site with GitHub Pages auto-deploy |
+| `testing` | `standard` | `minimal` (pytest) · `standard` (+ coverage + fixtures) · `full` (+ 80% threshold) |
+| `use_ml` | `false` | Notebooks dir, data dir, optional ML deps, DVC, `.env` template |
+| `use_typecheck` | `true` | mypy strict type checking |
+| `use_devcontainer` | `false` | VS Code / Codespaces dev container |
 
-## What you get (standard defaults)
+To skip all prompts and get the standard setup:
 
-### Development
-- [uv](https://docs.astral.sh/uv/) package management | [ruff](https://docs.astral.sh/ruff/) linting & formatting | [mypy](https://mypy.readthedocs.io/) strict type checking
-- [pytest](https://docs.pytest.org/) + coverage | [pre-commit](https://pre-commit.com/) hooks | [just](https://github.com/casey/just) task runner
+```bash
+uvx copier copy --defaults gh:namitdeb739/python-template my-project
+```
 
-### CI/CD & Security
-- GitHub Actions CI: lint, typecheck, test matrix (3.11-3.13), dependency audit
-- [Conventional Commits](https://www.conventionalcommits.org/) enforced on commits and PR titles
-- Optional: [CodeQL](https://codeql.github.com/) | [Dependabot](https://docs.github.com/en/code-security/dependabot) | [Codecov](https://codecov.io/)
+## What's included
 
-### Documentation & Publishing
-- [MkDocs Material](https://squidfunk.github.io/mkdocs-material/) with auto-deploy to GitHub Pages
-- PyPI publishing via trusted publishers | version bumping via [bump-my-version](https://github.com/callowayproject/bump-my-version)
+**Tooling** — [uv](https://docs.astral.sh/uv/) · [ruff](https://docs.astral.sh/ruff/) · [mypy](https://mypy.readthedocs.io/) · [pytest](https://docs.pytest.org/) · [pre-commit](https://pre-commit.com/) · [just](https://github.com/casey/just)
 
-### ML-Ready (opt-in)
-- Optional ML dependency group | typed dataclass `Config` | notebooks, data, scripts directories
-- Docker support (CPU + GPU variants) | DVC data versioning | `.env` template
+**CI/CD** — lint, type-check, test matrix, dependency audit, [Conventional Commits](https://www.conventionalcommits.org/) enforced on commits and PR titles, trusted-publisher PyPI release
+
+**Optional** — [CodeQL](https://codeql.github.com/) · [Dependabot](https://docs.github.com/en/code-security/dependabot) · [MkDocs Material](https://squidfunk.github.io/mkdocs-material/) · Docker (CPU + GPU) · [DVC](https://dvc.org/)
 
 ## After scaffolding
 
 ```bash
-just check                     # verify everything passes
+just check          # verify lint + type-check + tests all pass
 
-# Push to GitHub and enable branch protection + Pages:
-gh repo create --public your-username/your-project
-git remote add origin https://github.com/your-username/your-project.git
+# Push to GitHub and configure branch protection + Pages:
+gh repo create --public your-username/my-project
+git remote add origin https://github.com/your-username/my-project.git
 git push -u origin main
-just init-remote               # requires gh CLI authenticated
+just init-remote    # requires gh CLI authenticated
 ```
 
-## Pull in template improvements
+## Keeping up to date
+
+Pull in improvements from this template at any time:
 
 ```bash
-uvx copier update              # re-run from within an existing project
+uvx copier update
 ```
 
 ## License
