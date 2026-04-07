@@ -58,6 +58,9 @@ uv add --dev <package>     # dev/test dependency
 {%- if use_ml %}
 uv add --optional ml <package>  # optional ML extras
 {%- endif %}
+{%- if use_iot %}
+uv add --optional iot <package> # optional IoT extras
+{%- endif %}
 ```
 
 Always commit `uv.lock` after adding dependencies.
@@ -102,6 +105,22 @@ Always commit `uv.lock` after adding dependencies.
 - ML and data workflow details: `docs/ml-setup.md`
 {%- endif %}
 - Release process and versioning details: `docs/releasing.md`
+{% endif %}
+
+{% if use_iot %}
+## IoT / Embedded Development
+
+- **Drivers live in** `src/{{ package_name }}/drivers/` — serial (`serial.py`), GPIO (`gpio.py`), MQTT (`mqtt.py`)
+- **Device config**: `config/device.yaml` (gitignored) — copy from `config/device.yaml.example`
+- **Abstractions**: all hardware access goes through `typing.Protocol` interfaces — never import `serial`/`gpiozero`/`paho` directly in business logic
+- **Testing without hardware**: use `mock_serial` and `mock_gpio` fixtures from `tests/conftest.py` (autouse for GPIO); MQTT tests require a local Mosquitto broker or skip gracefully
+
+```bash
+just deploy <host>   # rsync src/ + restart systemd service (or docker pull + compose up if use_docker)
+```
+
+- **paho-mqtt**: import as `paho.mqtt.client` and always construct with `CallbackAPIVersion.VERSION2` (paho 2.x+)
+- **GPIO**: use `gpiozero` — `Device.pin_factory = MockFactory()` in test fixtures for CI-safe testing
 {% endif %}
 
 ## What NOT to Do

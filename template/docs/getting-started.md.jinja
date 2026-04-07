@@ -104,10 +104,15 @@ Docstrings are auto-rendered as [API documentation](api.md) by mkdocstrings.
 ## Next steps
 
 - Add your runtime dependencies to `pyproject.toml`
-{%- if use_docs %}
+{%- if ci_github %}
+- Run `just init-remote` to create the GitHub repo, push, configure branch protection{% if use_docs %}, and enable Pages{% endif %}
+{%- elif use_docs %}
 - Enable [GitHub Pages](https://docs.github.com/en/pages) for documentation hosting
 {%- endif %}
 {%- if testing != 'minimal' %}
 - Connect [Codecov](https://codecov.io/) for PR coverage reports
+{%- endif %}
+{%- if use_iot %}
+- Copy `config/device.yaml.example` to `config/device.yaml` and fill in your device addresses
 {%- endif %}
 - See [Contributing](contributing.md) for the full development guide
