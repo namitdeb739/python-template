@@ -25,12 +25,12 @@ All features are opt-in or opt-out at generation time:
 |---|---|---|
 | `ci_github` | `true` | GitHub Actions workflows: lint, type-check, test (3.11–3.13), audit |
 | `security` | `basic` | `none` · `basic` (pre-commit, ruff) · `full` (+ CodeQL, pip-audit, Dependabot) |
-| `use_docker` | `cpu` | `none` · `cpu` (Dockerfile + Compose) · `gpu` (+ GPU variant) |
-| `use_docs` | `true` | MkDocs Material site with GitHub Pages auto-deploy |
 | `testing` | `standard` | `minimal` (pytest) · `standard` (+ coverage + fixtures) · `full` (+ 80% threshold) |
-| `use_ml` | `false` | Notebooks dir, data dir, optional ML deps, DVC, `.env` template |
 | `use_typecheck` | `true` | mypy strict type checking |
+| `use_docs` | `true` | MkDocs Material site with GitHub Pages auto-deploy |
+| `use_docker` | `cpu` | `none` · `cpu` (Dockerfile + Compose) · `gpu` (+ GPU variant) |
 | `use_devcontainer` | `false` | VS Code / Codespaces dev container |
+| `use_ml` | `false` | Notebooks dir, data dir, optional ML deps, DVC, `.env` template |
 | `use_iot` | `false` | IoT/embedded setup: serial, GPIO, MQTT drivers, device config, mock fixtures |
 
 To skip all prompts and get the standard setup:

@@ -37,6 +37,7 @@ github_user:
 
 # --- Feature toggles ---
 
+# CI / security
 ci_github:
   type: bool
   default: true
@@ -51,20 +52,7 @@ security:
     "Pre-commit hooks + ruff linting": basic
     "Basic + CodeQL, pip-audit, Dependabot, branch protection": full
 
-use_docker:
-  type: str
-  default: cpu
-  help: "Docker support"
-  choices:
-    "No Docker": none
-    "CPU Dockerfile + Compose": cpu
-    "CPU + GPU Dockerfile": gpu
-
-use_docs:
-  type: bool
-  default: true
-  help: Include MkDocs documentation?
-
+# Code quality
 testing:
   type: str
   default: standard
@@ -74,20 +62,37 @@ testing:
     "pytest + coverage + fixtures": standard
     "Standard + coverage threshold + parametrized examples": full
 
-use_ml:
-  type: bool
-  default: false
-  help: Include ML/data science setup (notebooks, data dir, optional deps)?
-
 use_typecheck:
   type: bool
   default: true
   help: Enable mypy strict type checking?
 
+# Documentation & deployment
+use_docs:
+  type: bool
+  default: true
+  help: Include MkDocs documentation?
+
+use_docker:
+  type: str
+  default: cpu
+  help: "Docker support"
+  choices:
+    "No Docker": none
+    "CPU Dockerfile + Compose": cpu
+    "CPU + GPU Dockerfile": gpu
+
+# Dev environment
 use_devcontainer:
   type: bool
   default: false
   help: Include VS Code dev container config?
+
+# Domain-specific extras
+use_ml:
+  type: bool
+  default: false
+  help: Include ML/data science setup (notebooks, data dir, optional deps)?
 
 use_iot:
   type: bool
