@@ -6,7 +6,19 @@ readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.11"
 authors = [{name = "{{ author_name }}", email = "{{ author_email }}"}]
-dependencies = []
+dependencies = [
+{%- if use_cli %}
+    "typer>=0.12",
+{%- endif %}
+{%- if use_api %}
+    "fastapi>=0.111",
+    "uvicorn[standard]>=0.29",
+{%- endif %}
+{%- if use_db %}
+    "sqlalchemy>=2.0",
+    "alembic>=1.13",
+{%- endif %}
+]
 
 [dependency-groups]
 dev = [
@@ -59,7 +71,11 @@ iot = [
 {% endif %}
 
 [project.scripts]
+{%- if use_cli %}
+{{ project_name }} = "{{ package_name }}.cli:app"
+{%- else %}
 {{ project_name }} = "{{ package_name }}.main:main"
+{%- endif %}
 
 [build-system]
 requires = ["hatchling"]

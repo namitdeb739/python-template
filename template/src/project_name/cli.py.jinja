@@ -1,0 +1,15 @@
+"""CLI application for {{ project_name }}."""
+
+import typer
+
+app = typer.Typer(name="{{ project_name }}", help="{{ description }}", no_args_is_help=True)
+
+
+@app.command()
+def hello(name: str = typer.Option("World", help="Who to greet")) -> None:
+    """Greet someone."""
+    typer.echo(f"Hello, {name}!")
+
+
+if __name__ == "__main__":
+    app()

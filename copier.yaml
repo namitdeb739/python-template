@@ -99,6 +99,21 @@ use_iot:
   default: false
   help: Include IoT/embedded setup (serial, GPIO, MQTT drivers, device config)?
 
+use_cli:
+  type: bool
+  default: false
+  help: Include Typer CLI scaffold (commands, --help, rich output)?
+
+use_api:
+  type: bool
+  default: false
+  help: Include FastAPI REST API scaffold (routes, health endpoint, uvicorn serve)?
+
+use_db:
+  type: bool
+  default: false
+  help: Include SQLAlchemy 2 + Alembic (database session, migrations)?
+
 # --- Post-setup options ---
 
 init_dvc:
@@ -133,6 +148,12 @@ _tasks:
     when: "{{ not use_iot }}"
   - command: rm -f tests/test_drivers.py
     when: "{{ not use_iot }}"
+  - command: rm -f "src/{{ package_name }}/cli.py"
+    when: "{{ not use_cli }}"
+  - command: rm -rf "src/{{ package_name }}/api/"
+    when: "{{ not use_api }}"
+  - command: rm -rf "src/{{ package_name }}/db/" alembic/ alembic.ini
+    when: "{{ not use_db }}"
   - command: rm -rf docker/ .dockerignore
     when: "{{ use_docker == 'none' }}"
   - command: rm -f docker/Dockerfile.gpu

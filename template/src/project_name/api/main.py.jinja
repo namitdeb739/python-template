@@ -1,0 +1,13 @@
+"""FastAPI application for {{ project_name }}."""
+
+from fastapi import FastAPI
+
+from {{ package_name }}.api.routes import health
+
+app = FastAPI(
+    title="{{ project_name }}",
+    description="{{ description }}",
+    version="0.1.0",
+)
+
+app.include_router(health.router, prefix="/health", tags=["health"])

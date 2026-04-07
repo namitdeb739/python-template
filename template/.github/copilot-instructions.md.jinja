@@ -24,6 +24,16 @@ just coverage    # pytest with coverage report{% if testing == 'full' %} (80% th
 just docs        # mkdocs serve (local preview)
 {%- endif %}
 just release patch|minor|major  # bump version, tag, push
+{%- if use_cli %}
+just run [args]          # run the CLI app
+{%- endif %}
+{%- if use_api %}
+just serve               # start API dev server (uvicorn --reload)
+{%- endif %}
+{%- if use_db %}
+just migrate             # apply pending DB migrations
+just make-migration "msg"  # generate migration from model diff
+{%- endif %}
 ```
 
 ## Code Style
@@ -121,6 +131,49 @@ just deploy <host>   # rsync src/ + restart systemd service (or docker pull + co
 
 - **paho-mqtt**: import as `paho.mqtt.client` and always construct with `CallbackAPIVersion.VERSION2` (paho 2.x+)
 - **GPIO**: use `gpiozero` — `Device.pin_factory = MockFactory()` in test fixtures for CI-safe testing
+{% endif %}
+
+{% if use_cli %}
+## CLI Development
+
+- **Commands live in** `src/{{ package_name }}/cli.py` — add `@app.command()` functions there
+- **Entry point**: `{{ project_name }} <command>` (configured in `pyproject.toml` `[project.scripts]`)
+- **Testing**: use `typer.testing.CliRunner` to invoke commands in tests; never call `app()` directly
+- **Output**: prefer `typer.echo()` for plain output, `rich.print()` for styled output
+- **Options vs Arguments**: use `typer.Option` for optional flags, `typer.Argument` for positional args
+
+```bash
+just run --help           # see available commands
+just run <command>        # run a specific command
+```
+{% endif %}
+{% if use_api %}
+## API Development
+
+- **Routes live in** `src/{{ package_name }}/api/routes/` — add new routers there and include them in `api/main.py`
+- **No business logic in routes** — routes call service functions; keep logic in `src/{{ package_name }}/`
+- **Testing**: use `fastapi.testclient.TestClient` with the `app` instance — no running server needed
+- **Health check**: `GET /health/` is always available; add domain routes under their own prefix
+
+```bash
+just serve               # start dev server at http://localhost:8000
+                         # API docs at http://localhost:8000/docs
+```
+{% endif %}
+{% if use_db %}
+## Database Development
+
+- **Models live in** `src/{{ package_name }}/db/models/` — subclass `Base` from `db/base.py`
+- **Session**: use `get_db()` from `db/session.py` as a dependency (or context manager)
+- **DATABASE_URL**: set in environment (defaults to `sqlite:///./{{ package_name }}.db` for local dev)
+- **Migrations**: always create a migration after changing models; never edit existing migrations
+
+```bash
+just make-migration "describe your change"   # auto-generate migration from model diff
+just migrate                                  # apply all pending migrations
+```
+
+- Alembic env is in `alembic/env.py` — models must be imported there to register with metadata
 {% endif %}
 
 ## What NOT to Do

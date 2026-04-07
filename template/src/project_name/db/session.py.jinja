@@ -1,0 +1,17 @@
+"""Database session configuration."""
+
+import os
+from collections.abc import Generator
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./{{ package_name }}.db")
+
+engine = create_engine(DATABASE_URL)
+
+
+def get_db() -> Generator[Session, None, None]:
+    """Yield a database session and ensure it is closed after use."""
+    with Session(engine) as db:
+        yield db

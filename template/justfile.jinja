@@ -170,6 +170,26 @@ deploy host tag="latest":
 {% endif %}
 {% endif %}
 
+{% if use_cli %}
+# Run the CLI application
+run *args:
+    uv run {{ project_name }} {% raw %}{{ args }}{% endraw %}
+{% endif %}
+{% if use_api %}
+# Start the API development server
+serve:
+    uv run uvicorn {{ package_name }}.api.main:app --reload --host 0.0.0.0 --port 8000
+{% endif %}
+{% if use_db %}
+# Run all pending database migrations
+migrate:
+    uv run alembic upgrade head
+
+# Create a new migration (usage: just make-migration "add user table")
+make-migration message:
+    uv run alembic revision --autogenerate -m {% raw %}"{{ message }}"{% endraw %}
+{% endif %}
+
 # Clean build artifacts
 clean:
     rm -rf dist/ build/{% if use_docs %} site/{% endif %} .pytest_cache/{% if use_typecheck %} .mypy_cache/{% endif %} .ruff_cache/ htmlcov/
