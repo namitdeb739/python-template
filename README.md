@@ -31,6 +31,7 @@ All features are opt-in or opt-out at generation time:
 | `use_ml` | `false` | Notebooks dir, data dir, optional ML deps, DVC, `.env` template |
 | `use_typecheck` | `true` | mypy strict type checking |
 | `use_devcontainer` | `false` | VS Code / Codespaces dev container |
+| `use_iot` | `false` | IoT/embedded setup: serial, GPIO, MQTT drivers, device config, mock fixtures |
 
 To skip all prompts and get the standard setup:
 
