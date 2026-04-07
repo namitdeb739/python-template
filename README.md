@@ -50,14 +50,12 @@ uvx copier copy --defaults gh:namitdeb739/python-template my-project
 ## After scaffolding
 
 ```bash
-just check          # verify lint + type-check + tests all pass
-
-# Push to GitHub and configure branch protection + Pages:
-gh repo create --public your-username/my-project
-git remote add origin https://github.com/your-username/my-project.git
-git push -u origin main
-just init-remote    # requires gh CLI authenticated
+just check                      # verify lint + type-check + tests all pass
+just init-remote                # create GitHub repo, push, configure branch protection + Pages
+just init-remote visibility=private  # or keep the repo private
 ```
+
+`init-remote` uses the project name and GitHub username you entered during setup — no manual substitution needed. Requires [gh CLI](https://cli.github.com/) to be authenticated (`gh auth login`).
 
 ## Keeping up to date
 

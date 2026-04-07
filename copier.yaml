@@ -172,13 +172,12 @@ _message_after_copy: |
 
   Next steps:
     cd {{ project_name }}
-    just check                       # verify everything passes
-    gh repo create --public {{ github_user }}/{{ project_name }}
-    git remote add origin https://github.com/{{ github_user }}/{{ project_name }}.git
-    git push -u origin main
+    just check          # verify lint + type-check + tests all pass
   {% if ci_github %}
-    just init-remote                 # branch protection + GitHub Pages (requires gh CLI)
+    just init-remote    # create GitHub repo, push, configure branch protection + Pages
+  {% else %}
+    git init && git add -A && git commit -m "chore: initial commit"
   {% endif %}
 
   Update later:
-    uvx copier update                # pull in template improvements
+    uvx copier update   # pull in template improvements

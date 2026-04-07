@@ -3,15 +3,34 @@ default:
     @just --list
 {% if ci_github %}
 
-# Set up branch protection and GitHub Pages (run once after pushing to GitHub)
-init-remote:
+# Create GitHub repo, push, and configure branch protection + Pages (run once)
+init-remote visibility="public":
     #!/usr/bin/env bash
     set -euo pipefail
     if ! command -v gh &>/dev/null || ! gh auth status &>/dev/null 2>&1; then
-        echo "gh CLI not found or not authenticated — set up branch protection and GitHub Pages manually"
-        exit 0
+        echo "gh CLI not found or not authenticated — run: gh auth login"
+        exit 1
     fi
-    REPO=$(git remote get-url origin 2>/dev/null | sed 's|.*github.com[:/]||;s|\.git$||')
+
+    # Create repo if it doesn't exist yet
+    if ! gh repo view {{ github_user }}/{{ project_name }} &>/dev/null 2>&1; then
+        gh repo create {{ github_user }}/{{ project_name }} \
+            --{{ '{{' }}visibility{{ '}}' }} \
+            --description "{{ description }}" \
+            --source . \
+            --remote origin \
+            --push
+        echo "✓ Created {{ github_user }}/{{ project_name }} and pushed"
+    else
+        # Repo exists — ensure remote is set and push
+        if ! git remote get-url origin &>/dev/null 2>&1; then
+            git remote add origin https://github.com/{{ github_user }}/{{ project_name }}.git
+        fi
+        git push -u origin main
+        echo "✓ Pushed to existing repo {{ github_user }}/{{ project_name }}"
+    fi
+
+    REPO={{ github_user }}/{{ project_name }}
     BP_JSON=$(mktemp)
     cat > "$BP_JSON" <<'BPEOF'
     {
