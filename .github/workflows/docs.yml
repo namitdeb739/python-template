@@ -1,0 +1,53 @@
+name: Docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
+      - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
+        with:
+          version: "0.11.3"
+          python-version: "3.12"
+      - name: Configure git
+        run: |
+          git config --global user.name "CI"
+          git config --global user.email "ci@test.com"
+      - name: Render template
+        run: |
+          TEMPLATE_DIR=$(mktemp -d)
+          git archive HEAD | tar -C "$TEMPLATE_DIR" -xf -
+          uvx copier copy "$TEMPLATE_DIR" /tmp/rendered-docs \
+            --trust \
+            --defaults \
+            --overwrite \
+            --data project_name=python-template \
+            --data description="A modern, batteries-included Python project template" \
+            --data author_name=namitdeb739 \
+            --data author_email=namitdeb739@users.noreply.github.com \
+            --data github_user=namitdeb739
+      - name: Build docs
+        working-directory: /tmp/rendered-docs
+        run: uv run mkdocs build --site-dir /tmp/site
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: /tmp/site
+      - id: deployment
+        uses: actions/deploy-pages@v4
