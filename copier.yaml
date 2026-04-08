@@ -176,7 +176,7 @@ _tasks:
   - git init
   - git config core.longpaths true
   - git add -A
-  - "git commit -m 'chore: initial project from template'"
+  - 'git commit -m "chore: initial project from template"'
   # Install dependencies and hooks
   - uv sync --dev
   - command: uv run pre-commit install
