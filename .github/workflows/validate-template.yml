@@ -31,7 +31,7 @@ jobs:
         with:
           version: "0.11.3"
           python-version: "3.12"
-      - uses: extractions/setup-just@e33e0265a09d0d9e33744104863ef636539f4b97 # v3
+      - uses: extractions/setup-just@v2
       - name: Configure git
         run: |
           git config --global user.name "CI"
