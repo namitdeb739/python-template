@@ -5,6 +5,7 @@ repos:
       - id: ruff
         args: [--fix]
       - id: ruff-format
+{%- if use_typecheck %}
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.15.0
@@ -13,6 +14,7 @@ repos:
         additional_dependencies: []
         pass_filenames: false
         entry: mypy --config-file=pyproject.toml src/
+{%- endif %}
 
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v4.6.0
