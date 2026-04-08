@@ -29,8 +29,11 @@ _validate name *data_flags:
     echo "✓ {{ name }} passed"
 
 # Validate with standard defaults
-validate:
+validate-standard:
     just _validate standard
+
+# Alias for validate-standard
+validate: validate-standard
 
 # Validate minimal config (everything off)
 validate-minimal:
