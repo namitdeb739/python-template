@@ -32,6 +32,9 @@ All features are opt-in or opt-out at generation time:
 | `use_devcontainer` | `false` | VS Code / Codespaces dev container |
 | `use_ml` | `false` | Notebooks dir, data dir, optional ML deps, DVC, `.env` template |
 | `use_iot` | `false` | IoT/embedded setup: serial, GPIO, MQTT drivers, device config, mock fixtures |
+| `use_cli` | `false` | Typer CLI scaffold: commands, `--help`, rich output |
+| `use_api` | `false` | FastAPI REST API scaffold: routes, health endpoint, uvicorn serve |
+| `use_db` | `false` | SQLAlchemy 2 + Alembic: database session, migrations |
 
 To skip all prompts and get the standard setup:
 
