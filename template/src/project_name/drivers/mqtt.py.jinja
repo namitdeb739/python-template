@@ -39,6 +39,6 @@ def create_client(client_id: str = "") -> MQTTClient:
         client.loop_start()
         client.publish("{{ project_name }}/telemetry", '{"temp": 21.5}')
     """
-    import paho.mqtt.client as mqtt  # type: ignore[import-untyped]
+    import paho.mqtt.client as mqtt
 
-    return mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=client_id)  # type: ignore[return-value]
+    return mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=client_id)  # type: ignore[return-value,no-any-return]

@@ -38,4 +38,4 @@ def open_serial(port: str, baudrate: int = 115200, timeout: float = 1.0) -> Seri
     """
     import serial  # pyserial — imported lazily so tests don't require hardware
 
-    return serial.Serial(port, baudrate=baudrate, timeout=timeout)  # type: ignore[return-value]
+    return serial.Serial(port, baudrate=baudrate, timeout=timeout)  # type: ignore[return-value,no-any-return]

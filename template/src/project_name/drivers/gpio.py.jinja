@@ -38,9 +38,9 @@ def led(pin: int) -> DigitalOutput:
     Returns:
         A :class:`DigitalOutput` backed by :class:`~gpiozero.LED`.
     """
-    from gpiozero import LED  # type: ignore[import-untyped]
+    from gpiozero import LED
 
-    return LED(pin)  # type: ignore[return-value]
+    return LED(pin)  # type: ignore[return-value,no-any-return]
 
 
 def button(pin: int, pull_up: bool = True) -> DigitalInput:
@@ -53,6 +53,6 @@ def button(pin: int, pull_up: bool = True) -> DigitalInput:
     Returns:
         A :class:`DigitalInput` backed by :class:`~gpiozero.Button`.
     """
-    from gpiozero import Button  # type: ignore[import-untyped]
+    from gpiozero import Button
 
-    return Button(pin, pull_up=pull_up)  # type: ignore[return-value]
+    return Button(pin, pull_up=pull_up)  # type: ignore[return-value,no-any-return]
