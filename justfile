@@ -11,7 +11,7 @@ _validate name *data_flags:
     OUT=$(mktemp -d)
     trap 'chmod -R +w "$OUT" 2>/dev/null; rm -rf "$OUT"' EXIT
     echo "▶ Validating '{{ name }}' → $OUT"
-    uvx copier copy . "$OUT/project" \
+    uvx --with copier-template-extensions copier copy . "$OUT/project" \
         --trust --defaults --overwrite --vcs-ref=HEAD \
         --data project_name={{ name }}-project \
         --data description="Validate {{ name }}" \

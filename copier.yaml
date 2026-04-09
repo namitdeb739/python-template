@@ -1,5 +1,5 @@
 # Copier template for Python projects
-# Usage: uvx copier copy --trust gh:namitdeb739/python-template <project-dir>
+# Usage: uvx --with copier-template-extensions copier copy --trust gh:namitdeb739/python-template <project-dir>
 # Docs:  https://namitdeb739.github.io/python-template
 
 # --- Project identity ---
@@ -23,16 +23,19 @@ description:
 author_name:
   type: str
   help: Author full name
+  default: "{{ git_user_name }}"
   placeholder: Your Name
 
 author_email:
   type: str
   help: Author email
+  default: "{{ git_user_email }}"
   placeholder: you@example.com
 
 github_user:
   type: str
   help: GitHub username or organisation
+  default: "{{ github_username }}"
   placeholder: your-username
 
 # --- Feature toggles ---
@@ -129,6 +132,11 @@ init_env:
   when: "{{ use_ml }}"
 
 _min_copier_version: "9.0.0"
+
+_jinja_extensions:
+  - copier_template_extensions.TemplateExtensionLoader
+  - extensions/context.py:GitDefaults
+
 _subdirectory: template
 
 _exclude:
@@ -202,4 +210,4 @@ _message_after_copy: |
   {% endif %}
 
   Update later:
-    uvx copier update   # pull in template improvements
+    uvx --with copier-template-extensions copier update --trust
