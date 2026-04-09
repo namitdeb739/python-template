@@ -46,6 +46,7 @@ def data_dir(tmp_path: Path) -> Path:
 # IoT fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def mock_serial() -> Generator[MagicMock, None, None]:
     """Mock serial.Serial so serial tests run without hardware attached."""
@@ -77,4 +78,4 @@ def mock_gpio() -> Generator[None, None, None]:
         Device.pin_factory = original
     except ImportError:
         yield  # gpiozero not installed; skip silently
-{% endif %}
+{%- endif %}
