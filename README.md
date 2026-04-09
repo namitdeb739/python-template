@@ -11,11 +11,20 @@ A batteries-included Python project template powered by [Copier](https://copier.
 **Requires:** [uv](https://docs.astral.sh/uv/getting-started/installation/) and [just](https://github.com/casey/just#installation)
 
 ```bash
-uvx --with copier-template-extensions copier copy --trust gh:namitdeb739/python-template my-project
+uvx copier copy --trust gh:namitdeb739/python-template my-project
 cd my-project
 ```
 
 Copier prompts for your project name, author details, and feature choices. Answer the questions (or hit Enter for defaults) and you're done.
+
+To auto-fill author info from your git/GitHub config:
+
+```bash
+uvx copier copy --trust gh:namitdeb739/python-template my-project \
+  --data author_name="$(git config user.name)" \
+  --data author_email="$(git config user.email)" \
+  --data github_user="$(gh api user --jq .login)"
+```
 
 ## Features
 
@@ -39,7 +48,10 @@ All features are opt-in or opt-out at generation time:
 To skip all prompts and get the standard setup:
 
 ```bash
-uvx copier copy --trust --defaults gh:namitdeb739/python-template my-project
+uvx copier copy --trust --defaults gh:namitdeb739/python-template my-project \
+  --data author_name="$(git config user.name)" \
+  --data author_email="$(git config user.email)" \
+  --data github_user="$(gh api user --jq .login)"
 ```
 
 ## What's included
@@ -65,7 +77,7 @@ just init-remote visibility=private  # or keep the repo private
 Pull in improvements from this template at any time:
 
 ```bash
-uvx --with copier-template-extensions copier update --trust
+uvx copier update --trust
 ```
 
 ## License

@@ -34,7 +34,7 @@ jobs:
         run: |
           TEMPLATE_DIR=$(mktemp -d)
           git archive HEAD | tar -C "$TEMPLATE_DIR" -xf -
-          uvx --with copier-template-extensions copier copy "$TEMPLATE_DIR" /tmp/rendered-docs \
+          uvx copier copy "$TEMPLATE_DIR" /tmp/rendered-docs \
             --trust \
             --defaults \
             --overwrite \
