@@ -11,7 +11,7 @@ A batteries-included Python project template powered by [Copier](https://copier.
 **Requires:** [uv](https://docs.astral.sh/uv/getting-started/installation/) and [just](https://github.com/casey/just#installation)
 
 ```bash
-uvx copier copy gh:namitdeb739/python-template my-project
+uvx copier copy --trust gh:namitdeb739/python-template my-project
 cd my-project
 ```
 
@@ -39,7 +39,7 @@ All features are opt-in or opt-out at generation time:
 To skip all prompts and get the standard setup:
 
 ```bash
-uvx copier copy --defaults gh:namitdeb739/python-template my-project
+uvx copier copy --trust --defaults gh:namitdeb739/python-template my-project
 ```
 
 ## What's included

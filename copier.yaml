@@ -1,5 +1,5 @@
 # Copier template for Python projects
-# Usage: uvx copier copy gh:namitdeb739/python-template <project-dir>
+# Usage: uvx copier copy --trust gh:namitdeb739/python-template <project-dir>
 # Docs:  https://namitdeb739.github.io/python-template
 
 # --- Project identity ---
@@ -128,6 +128,7 @@ init_env:
   default: false
   when: "{{ use_ml }}"
 
+_min_copier_version: "9.0.0"
 _subdirectory: template
 
 _exclude:
