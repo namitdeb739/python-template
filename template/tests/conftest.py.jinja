@@ -50,15 +50,25 @@ def data_dir(tmp_path: Path) -> Path:
 @pytest.fixture
 def mock_serial() -> Generator[MagicMock, None, None]:
     """Mock serial.Serial so serial tests run without hardware attached."""
+    from unittest.mock import MagicMock as _MagicMock
     from unittest.mock import patch
+
+    def _configure(mock: MagicMock) -> MagicMock:
+        mock.readline.return_value = b"OK\r\n"
+        mock.read.return_value = b"\x00"
+        mock.write.return_value = 4
+        mock.is_open = True
+        return mock
+
+    try:
+        import serial as _serial  # noqa: F401
+    except ImportError:
+        yield _configure(_MagicMock())
+        return
 
     with patch("serial.Serial") as mock_cls:
         instance = mock_cls.return_value.__enter__.return_value = mock_cls.return_value
-        instance.readline.return_value = b"OK\r\n"
-        instance.read.return_value = b"\x00"
-        instance.write.return_value = 4
-        instance.is_open = True
-        yield instance
+        yield _configure(instance)
 
 
 @pytest.fixture(autouse=True)
