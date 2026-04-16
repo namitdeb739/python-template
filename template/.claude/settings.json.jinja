@@ -1,0 +1,50 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv run ruff *)",
+      {% if use_typecheck %}"Bash(uv run mypy *)",
+      {% endif %}"Bash(uv run pytest *)",
+      {% if security != 'none' %}"Bash(uv run pre-commit *)",
+      {% endif %}"Bash(just *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git checkout *)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(gh pr *)",
+      "Bash(gh issue *)"{% if use_db %},
+      "Bash(uv run alembic *)"{% endif %}{% if use_api %},
+      "Bash(uv run uvicorn *)"{% endif %}{% if use_docs %},
+      "Bash(uv run mkdocs *)"{% endif %}
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && INPUT=$(cat) && FILE=$(echo \"$INPUT\" | jq -r '.tool_input.file_path // empty') && [ -n \"$FILE\" ] && [[ \"$FILE\" == *.py ]] && uv run ruff format --quiet \"$FILE\" && uv run ruff check --fix --quiet \"$FILE\" || true",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "BRANCH=$(git branch --show-current 2>/dev/null); if [ \"$BRANCH\" = \"main\" ]; then echo \"You are on main. Create a feature branch first: git checkout -b feat/my-change\" >&2; exit 2; fi",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

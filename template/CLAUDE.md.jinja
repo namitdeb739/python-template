@@ -1,0 +1,69 @@
+# {{ project_name }}
+
+{{ description }}
+
+## Commands
+
+```bash
+just check          # full CI mirror: lint + {% if use_typecheck %}typecheck + {% endif %}test
+just lint           # ruff check + format check
+just fix            # auto-fix lint and formatting issues
+{% if use_typecheck -%}
+just typecheck      # mypy --strict
+{% endif -%}
+just test           # pytest{% if testing != 'minimal' %} with coverage{% endif %}
+
+{% if use_docs -%}
+just docs           # serve docs locally at http://localhost:8000
+{% endif -%}
+{% if use_api -%}
+just serve          # start FastAPI dev server
+{% endif -%}
+{% if use_db -%}
+just migrate        # apply Alembic migrations
+just make-migration # create a new migration (usage: just make-migration "add users table")
+{% endif -%}
+{% if use_docker != 'none' -%}
+just docker-build   # build Docker image
+just docker-run     # run container locally
+{% endif %}
+```
+
+## Architecture
+
+- `src/{{ package_name }}/` — main package (src-layout)
+- `tests/` — pytest tests; shared fixtures in `conftest.py`
+{% if use_api -%}
+- `src/{{ package_name }}/api/` — FastAPI app and route handlers
+{% endif -%}
+{% if use_db -%}
+- `src/{{ package_name }}/db/` — SQLAlchemy models and session factory
+- `alembic/` — database migrations (auto-generated, not hand-edited)
+{% endif -%}
+{% if use_cli -%}
+- `src/{{ package_name }}/cli.py` — Typer CLI entrypoint
+{% endif -%}
+{% if use_iot -%}
+- `src/{{ package_name }}/drivers/` — hardware drivers (serial, GPIO, MQTT)
+- `config/` — device configuration (not committed — copy from `config/device.yaml.example`)
+{% endif -%}
+{% if use_ml -%}
+- `notebooks/` — Jupyter notebooks for exploration
+- `data/` — datasets (not committed; use DVC if `init_dvc=true`)
+{% endif %}
+
+## Conventions
+
+- All code must pass `mypy --strict`{% if not use_typecheck %} (disabled in this project — enable by adding `use_typecheck=true`){% endif %}
+- Format and lint: ruff (line length 88, Python 3.11+)
+- Tests: pytest, fixtures in `conftest.py`
+- Commits: Conventional Commits — `feat:`, `fix:`, `docs:`, `refactor:`, etc.
+- PRs: squash-merge to main, delete branch after merge
+{% if use_db -%}
+- Always create migrations with `just make-migration` — never hand-edit `alembic/versions/`
+- SQL: use SQLAlchemy ORM or `text()` with bound parameters — no string interpolation
+{% endif -%}
+{% if use_api -%}
+- All new routes go in `src/{{ package_name }}/api/routes/`
+- `GET /health` must always return 200 — do not break this endpoint
+{% endif %}

@@ -63,3 +63,4 @@ Thumbs.db
 # Do NOT ignore the shared Copilot instructions file
 !.github/copilot-instructions.md
 .github/copilot-instructions.md
+.claude/settings.local.json
