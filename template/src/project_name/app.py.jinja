@@ -1,0 +1,77 @@
+{%- if use_webapp == 'streamlit' -%}
+"""Streamlit dashboard for {{ project_name }}.
+
+Run with:  just app   (or: uv run streamlit run src/{{ package_name }}/app.py)
+"""
+
+from __future__ import annotations
+
+import streamlit as st
+
+
+def main() -> None:
+    """Render the dashboard."""
+    st.title("{{ project_name }}")
+    st.write("{{ description }}")
+
+
+if __name__ == "__main__":
+    main()
+{%- elif use_webapp == 'dash' -%}
+"""Plotly Dash app for {{ project_name }}.
+
+Run with:  just app   (or: uv run python -m {{ package_name }}.app)
+"""
+
+from __future__ import annotations
+
+from dash import Dash, html
+
+app = Dash(__name__)
+app.layout = html.Div(
+    children=[
+        html.H1("{{ project_name }}"),
+        html.P("{{ description }}"),
+    ],
+)
+
+
+def main() -> None:
+    """Start the development server."""
+    app.run(debug=True)
+
+
+if __name__ == "__main__":
+    main()
+{%- elif use_webapp == 'gradio' -%}
+"""Gradio app for {{ project_name }}.
+
+Run with:  just app   (or: uv run python -m {{ package_name }}.app)
+"""
+
+from __future__ import annotations
+
+import gradio as gr
+
+
+def greet(name: str) -> str:
+    """Return a greeting for ``name``."""
+    return f"Hello, {name}!"
+
+
+demo = gr.Interface(
+    fn=greet,
+    inputs="text",
+    outputs="text",
+    title="{{ project_name }}",
+)
+
+
+def main() -> None:
+    """Launch the app."""
+    demo.launch()
+
+
+if __name__ == "__main__":
+    main()
+{%- endif %}

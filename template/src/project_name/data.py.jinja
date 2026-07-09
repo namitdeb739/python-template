@@ -1,0 +1,21 @@
+"""Data loading helpers for {{ project_name }}."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import pandas as pd
+
+from {{ package_name }}.config import Config
+
+
+def load_csv(name: str, config: Config | None = None) -> pd.DataFrame:
+    """Load a CSV from the configured data directory.
+
+    Args:
+        name: File name relative to ``config.data_dir``.
+        config: Optional config; a default ``Config()`` is used if omitted.
+    """
+    config = config or Config()
+    path = Path(config.data_dir) / name
+    return pd.read_csv(path)

@@ -33,7 +33,8 @@ htmlcov/
 .ipynb_checkpoints/
 
 # Output
-output/
+output/*
+!output/.gitkeep
 
 # Data files
 *.csv

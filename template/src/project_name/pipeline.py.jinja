@@ -1,0 +1,19 @@
+"""Example scikit-learn pipeline for {{ project_name }}."""
+
+from __future__ import annotations
+
+from sklearn.model_selection import train_test_split
+
+
+def split_indices(
+    n: int, test_size: float = 0.2, seed: int = 42
+) -> tuple[list[int], list[int]]:
+    """Split ``range(n)`` into train/test index lists.
+
+    A minimal placeholder demonstrating a reproducible train/test split;
+    replace with your real feature engineering and model training.
+    """
+    train, test = train_test_split(
+        list(range(n)), test_size=test_size, random_state=seed
+    )
+    return list(train), list(test)

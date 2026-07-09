@@ -1,7 +1,8 @@
 """Typed configuration using dataclasses.
 
-Define your project's configuration here. Dataclasses provide type safety,
-default values, and easy serialization without external dependencies.
+Field defaults are read from the environment (and a local ``.env`` file if
+present), falling back to the literal defaults below. Values passed explicitly
+to ``Config(...)`` always take precedence over the environment.
 
 Usage:
     from {{ package_name }}.config import Config
@@ -12,8 +13,18 @@ Usage:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import os
+from dataclasses import dataclass, field
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+def _env(key: str, default: str) -> str:
+    """Return an environment variable, falling back to ``default``."""
+    return os.getenv(key, default)
 
 
 @dataclass
@@ -21,12 +32,12 @@ class Config:
     """Project configuration."""
 
     # Paths
-    data_dir: Path | str = Path("data")
-    output_dir: Path | str = Path("output")
+    data_dir: Path | str = field(default_factory=lambda: _env("DATA_DIR", "data"))
+    output_dir: Path | str = field(default_factory=lambda: _env("OUTPUT_DIR", "output"))
 
     # Reproducibility
-    seed: int = 42
-{%- if use_ml %}
+    seed: int = field(default_factory=lambda: int(_env("SEED", "42")))
+{%- if use_ml != 'none' %}
 
     # Training (uncomment and customize as needed)
     # learning_rate: float = 1e-3

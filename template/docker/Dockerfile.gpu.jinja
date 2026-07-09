@@ -16,11 +16,11 @@ COPY --from=ghcr.io/astral-sh/uv:0.11.3 /uv /uvx /bin/
 ENV UV_PYTHON=python3.11
 
 COPY pyproject.toml uv.lock* ./
-RUN uv sync --no-dev{%- if use_ml %} --extra ml{%- endif %} --no-install-project
+RUN uv sync --no-dev{%- if use_ml != 'none' %} --extra ml{%- endif %} --no-install-project
 
 COPY README.md ./
 COPY src/ src/
-RUN uv sync --no-dev{%- if use_ml %} --extra ml{%- endif %}
+RUN uv sync --no-dev{%- if use_ml != 'none' %} --extra ml{%- endif %}
 
 RUN chown -R app:app /app
 USER app

@@ -23,7 +23,7 @@ _validate name *data_flags:
     uv run ruff check src/ tests/
     uv run ruff format --check src/ tests/
     if [ -f pyproject.toml ] && grep -q 'mypy' pyproject.toml; then
-        uv run mypy src/
+        uv run mypy src/ tests/
     fi
     uv run pytest -v
     echo "✓ {{ name }} passed"
@@ -35,7 +35,7 @@ validate-standard: (_validate "standard")
 validate: validate-standard
 
 # Validate minimal config (everything off)
-validate-minimal: (_validate "minimal" "--data ci_github=false --data security=none --data use_docker=none --data use_docs=false --data testing=minimal --data use_ml=false --data use_typecheck=false --data use_devcontainer=false")
+validate-minimal: (_validate "minimal" "--data ci_github=false --data security=none --data use_docker=none --data use_docs=false --data testing=minimal --data use_ml=none --data use_typecheck=false --data use_devcontainer=false")
 
 # Validate CLI feature
 validate-cli: (_validate "cli" "--data use_cli=true")
@@ -49,14 +49,20 @@ validate-db: (_validate "db" "--data use_db=true")
 # Validate IoT feature
 validate-iot: (_validate "iot" "--data use_iot=true")
 
+# Validate ML feature (full tier: pandas + scikit-learn + pipeline)
+validate-ml: (_validate "ml" "--data use_ml=full")
+
+# Validate web app feature (Streamlit)
+validate-webapp: (_validate "webapp" "--data use_webapp=streamlit")
+
 # Validate GPU + ML combo (catches cross-feature bugs)
-validate-gpu-ml: (_validate "gpu-ml" "--data use_docker=gpu --data use_ml=true")
+validate-gpu-ml: (_validate "gpu-ml" "--data use_docker=gpu --data use_ml=standard")
 
 # Validate kitchen-sink (all features on)
-validate-full: (_validate "full" "--data security=full --data testing=full --data use_docker=gpu --data use_devcontainer=true --data use_ml=true --data use_iot=true --data use_cli=true --data use_api=true --data use_db=true")
+validate-full: (_validate "full" "--data security=full --data testing=full --data use_docker=gpu --data use_devcontainer=true --data use_ml=full --data use_webapp=streamlit --data use_iot=true --data use_cli=true --data use_api=true --data use_db=true")
 
 # Run all validation variants
-validate-all: validate validate-minimal validate-cli validate-api validate-db validate-iot validate-gpu-ml validate-full
+validate-all: validate validate-minimal validate-cli validate-api validate-db validate-ml validate-webapp validate-iot validate-gpu-ml validate-full
 
 # Tag a release and push (usage: just release [patch|minor|major])
 release bump="patch":
