@@ -39,7 +39,7 @@ def test_config_paths_are_path_objects(sample_config: Config) -> None:
     [
         (0, "data/raw", "output/v1"),
         (123, "data/processed", "output/v2"),
-        (999, "/tmp/data", "/tmp/output"),
+        (999, "/abs/data", "/abs/output"),
     ],
 )
 def test_config_parametrized(seed: int, data_dir: str, output_dir: str) -> None:
@@ -51,5 +51,5 @@ def test_config_parametrized(seed: int, data_dir: str, output_dir: str) -> None:
 
 def test_config_accepts_string_paths() -> None:
     """String paths should be coerced to Path by __post_init__."""
-    config = Config(data_dir=Path("some/path"), output_dir=Path("other/path"))  # type: ignore[arg-type]
+    config = Config(data_dir="some/path", output_dir="other/path")
     assert isinstance(config.data_dir, Path)

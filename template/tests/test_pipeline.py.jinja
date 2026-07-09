@@ -1,0 +1,12 @@
+"""Tests for the example pipeline."""
+
+from __future__ import annotations
+
+from {{ package_name }}.pipeline import split_indices
+
+
+def test_split_indices() -> None:
+    train, test = split_indices(10, test_size=0.2, seed=0)
+    assert len(train) == 8
+    assert len(test) == 2
+    assert set(train) | set(test) == set(range(10))

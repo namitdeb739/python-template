@@ -1,0 +1,19 @@
+"""Tests for data loading."""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from {{ package_name }}.config import Config
+from {{ package_name }}.data import load_csv
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+
+def test_load_csv(tmp_path: Path) -> None:
+    csv = tmp_path / "sample.csv"
+    csv.write_text("a,b\n1,2\n")
+    df = load_csv("sample.csv", Config(data_dir=tmp_path))
+    assert "a" in df.columns
+    assert len(df) == 1
