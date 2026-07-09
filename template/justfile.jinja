@@ -1,9 +1,8 @@
 # List available recipes
 default:
     @just --list
-{% if ci_github %}
 
-# Create GitHub repo, push, and configure branch protection + Pages (run once)
+# Create GitHub repo and push (run once){% if ci_github %} — also sets branch protection{% endif %}{% if use_docs %} + Pages{% endif %}
 init-remote visibility="public":
     #!/usr/bin/env bash
     set -euo pipefail
@@ -29,6 +28,7 @@ init-remote visibility="public":
         git push -u origin main
         echo "✓ Pushed to existing repo {{ github_user }}/{{ project_name }}"
     fi
+{%- if ci_github %}
 
     REPO={{ github_user }}/{{ project_name }}
     BP_JSON=$(mktemp)
@@ -51,14 +51,16 @@ init-remote visibility="public":
         echo "⚠ Could not set branch protection (check gh auth permissions)"
     fi
     rm -f "$BP_JSON"
+{%- endif %}
 {%- if use_docs %}
+
+    REPO={{ github_user }}/{{ project_name }}
     if gh api "repos/${REPO}/pages" -X POST -f build_type=workflow --silent 2>/dev/null; then
         echo "✓ GitHub Pages enabled (Actions source)"
     else
         echo "⚠ Could not enable GitHub Pages (may already be enabled, or enable manually in Settings > Pages)"
     fi
 {%- endif %}
-{% endif %}
 
 # Install dependencies and set up dev environment
 setup:
