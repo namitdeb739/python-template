@@ -12,5 +12,6 @@
   "mypy-type-checker.args": ["--config-file=pyproject.toml"],
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
-  "editor.rulers": [88]
+  "editor.rulers": [88],
+  "task.allowAutomaticTasks": "on"
 }
