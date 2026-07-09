@@ -11,7 +11,7 @@
 ```text
 src/{{ package_name }}/   # Your source code goes here
 tests/                    # Tests (pytest)
-{%- if use_ml %}
+{%- if use_ml != 'none' %}
 notebooks/                # Jupyter notebooks for exploration
 data/                     # Datasets (gitignored, use DVC for versioning)
 {%- endif %}
@@ -35,6 +35,9 @@ just setup    # install deps{% if security != 'none' %} + pre-commit hooks{% end
 just check     # run lint{% if use_typecheck %} + typecheck{% endif %} + test (same as CI)
 just fix       # auto-fix lint and formatting issues
 just test      # run tests only
+{%- if use_webapp != 'none' %}
+just app       # run the {{ use_webapp }} app
+{%- endif %}
 {%- if use_docs %}
 just docs      # preview docs locally at http://127.0.0.1:8000/
 {%- endif %}
@@ -48,7 +51,7 @@ uv add requests
 
 # Dev dependency
 uv add --group dev httpx
-{% if use_ml %}
+{% if use_ml != 'none' %}
 # ML optional dependency
 uv add --optional ml numpy
 {% endif %}

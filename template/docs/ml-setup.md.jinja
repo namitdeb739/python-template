@@ -1,8 +1,8 @@
 # ML Setup
 
-## Optional dependencies
-
-The `[ml]` extras group in `pyproject.toml` contains common ML libraries (commented out by default):
+## Dependencies
+{% if use_ml == 'minimal' %}
+The `[ml]` extras group in `pyproject.toml` lists common ML libraries, commented out by default:
 
 ```toml
 [project.optional-dependencies]
@@ -13,7 +13,6 @@ ml = [
     # "matplotlib>=3.9",
     # "torch>=2.3",
     # "transformers>=4.40",
-    # "dvc>=3.50",
 ]
 ```
 
@@ -22,6 +21,17 @@ Uncomment what you need, then install:
 ```bash
 uv sync --extra ml
 ```
+{% else %}
+Core libraries are installed as project dependencies (available after `just setup`):
+
+- `numpy`, `pandas`, `matplotlib`{% if use_ml == 'full' %}, `scikit-learn`{% endif %}
+
+Heavier/optional libraries (`torch`, `transformers`, …) live in the commented-out `[ml]` extra. Uncomment what you need, then install:
+
+```bash
+uv sync --extra ml
+```
+{% endif %}
 
 ## Project layout
 

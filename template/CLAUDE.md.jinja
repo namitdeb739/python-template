@@ -55,7 +55,7 @@ just docker-run     # run container locally
 - `src/{{ package_name }}/drivers/` — hardware drivers (serial, GPIO, MQTT)
 - `config/` — device configuration (not committed — copy from `config/device.yaml.example`)
 {% endif -%}
-{% if use_ml -%}
+{% if use_ml != 'none' -%}
 - `notebooks/` — Jupyter notebooks for exploration
 - `data/` — datasets (not committed; use DVC if `init_dvc=true`)
 {% endif %}

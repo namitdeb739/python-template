@@ -30,11 +30,14 @@ just             # list all available recipes
 
 ```text
 src/{{ package_name }}/   Source package (src layout)
+{%- if use_webapp != 'none' %}
+src/{{ package_name }}/app.py   {{ use_webapp }} app — run with `just app`
+{%- endif %}
 tests/                    Test suite (pytest)
 {%- if use_docs %}
 docs/                     Documentation (MkDocs Material)
 {%- endif %}
-{%- if use_ml %}
+{%- if use_ml != 'none' %}
 notebooks/                Jupyter notebooks
 data/                     Datasets (gitignored, DVC-ready)
 {%- endif %}
