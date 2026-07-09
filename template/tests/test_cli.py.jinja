@@ -1,0 +1,21 @@
+"""Tests for the CLI."""
+
+from __future__ import annotations
+
+from typer.testing import CliRunner
+
+from {{ package_name }}.cli import app
+
+runner = CliRunner()
+
+
+def test_hello_default() -> None:
+    result = runner.invoke(app, ["--name", "World"])
+    assert result.exit_code == 0
+    assert "Hello, World!" in result.output
+
+
+def test_hello_name() -> None:
+    result = runner.invoke(app, ["--name", "Ada"])
+    assert result.exit_code == 0
+    assert "Hello, Ada!" in result.output

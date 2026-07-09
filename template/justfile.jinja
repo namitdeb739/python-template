@@ -36,7 +36,7 @@ init-remote visibility="public":
     {
       "required_status_checks": {
         "strict": true,
-        "contexts": ["lint",{% if use_typecheck %} "type-check",{% endif %} "test (3.11)", "test (3.12)", "test (3.13)"{% if security != 'none' %}, "audit"{% endif %}]
+        "contexts": ["lint",{% if use_typecheck %} "type-check",{% endif %} "test (3.14)"{% if not use_iot %}, "test-cross-platform (windows-latest)", "test-cross-platform (macos-latest)"{% endif %}{% if security != 'none' %}, "audit"{% endif %}]
       },
       "enforce_admins": false,
       "required_pull_request_reviews": null,
@@ -84,7 +84,7 @@ fix:
 
 # Type check
 typecheck:
-    uv run mypy src/
+    uv run mypy src/ tests/
 {% endif %}
 
 # Run tests
@@ -98,7 +98,7 @@ coverage:
     uv run pytest --cov=src --cov-report=term-missing{% if testing == 'full' %} --cov-fail-under=80{% endif %}
 
 {% endif %}
-{% if use_ml %}
+{% if use_ml != 'none' %}
 
 # Launch Jupyter notebook server
 notebook:
@@ -141,14 +141,14 @@ audit:
 build:
     uv build
 
-# Bump version, create git tag, and push (usage: just release patch|minor|major)
+# Bump version + changelog, create git tag, and push (usage: just release patch|minor|major)
 release bump:
     #!/usr/bin/env bash
     set -euo pipefail
     just check
-    uvx bump-my-version bump {% raw %}{{ bump }}{% endraw %}
+    uv run cz bump --increment "$(echo {% raw %}{{ bump }}{% endraw %} | tr '[:lower:]' '[:upper:]')" --yes
     git push --follow-tags
-{% if use_ml %}
+{% if use_ml != 'none' %}
 
 # Initialize DVC (run once)
 dvc-init:
@@ -179,6 +179,16 @@ run *args:
 # Start the API development server
 serve:
     uv run uvicorn {{ package_name }}.api.main:app --reload --host 0.0.0.0 --port 8000
+{% endif %}
+{% if use_webapp == 'streamlit' %}
+# Run the Streamlit app
+app:
+    uv run streamlit run src/{{ package_name }}/app.py
+{% endif %}
+{% if use_webapp == 'dash' or use_webapp == 'gradio' %}
+# Run the web app
+app:
+    uv run python -m {{ package_name }}.app
 {% endif %}
 {% if use_db %}
 # Run all pending database migrations

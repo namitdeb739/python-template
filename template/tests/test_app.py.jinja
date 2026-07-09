@@ -1,0 +1,9 @@
+"""Smoke test for the web app module (imports without launching a server)."""
+
+from __future__ import annotations
+
+from {{ package_name }} import app
+
+
+def test_app_has_main() -> None:
+    assert callable(app.main)

@@ -90,9 +90,24 @@ use_devcontainer:
 
 # Domain-specific extras
 use_ml:
-  type: bool
-  default: false
-  help: Include ML/data science setup (notebooks, data dir, optional deps)?
+  type: str
+  default: none
+  help: "ML/data science setup"
+  choices:
+    "No ML setup": none
+    "Dirs + notebooks, deps commented (opt-in)": minimal
+    "Minimal + pandas/numpy/matplotlib installed + example notebook + data loader": standard
+    "Standard + scikit-learn + example pipeline": full
+
+use_webapp:
+  type: str
+  default: none
+  help: "Interactive web app / dashboard scaffold"
+  choices:
+    "No web app": none
+    "Streamlit dashboard": streamlit
+    "Plotly Dash app": dash
+    "Gradio app": gradio
 
 use_iot:
   type: bool
@@ -120,13 +135,12 @@ init_dvc:
   type: bool
   help: Initialise DVC for data versioning?
   default: false
-  when: "{{ use_ml }}"
+  when: "{{ use_ml != 'none' }}"
 
 init_env:
   type: bool
   help: Create .env from .env.example?
   default: false
-  when: "{{ use_ml }}"
 
 _min_copier_version: "9.0.0"
 _subdirectory: template
@@ -148,20 +162,26 @@ _tasks:
     when: "{{ not use_iot }}"
   - command: rm -f tests/test_drivers.py
     when: "{{ not use_iot }}"
-  - command: rm -f "src/{{ package_name }}/cli.py"
+  - command: rm -f "src/{{ package_name }}/cli.py" tests/test_cli.py
     when: "{{ not use_cli }}"
-  - command: rm -rf "src/{{ package_name }}/api/"
+  - command: rm -rf "src/{{ package_name }}/api/" tests/test_api.py
     when: "{{ not use_api }}"
-  - command: rm -rf "src/{{ package_name }}/db/" alembic/ alembic.ini
+  - command: rm -rf "src/{{ package_name }}/db/" alembic/ alembic.ini tests/test_db.py
     when: "{{ not use_db }}"
+  - command: rm -f "src/{{ package_name }}/app.py" tests/test_app.py
+    when: "{{ use_webapp == 'none' }}"
+  - command: rm -f "src/{{ package_name }}/data.py" tests/test_data.py notebooks/01_explore.ipynb
+    when: "{{ use_ml in ['none', 'minimal'] }}"
+  - command: rm -f "src/{{ package_name }}/pipeline.py" tests/test_pipeline.py
+    when: "{{ use_ml != 'full' }}"
   - command: rm -rf docker/ .dockerignore
     when: "{{ use_docker == 'none' }}"
   - command: rm -f docker/Dockerfile.gpu
     when: "{{ use_docker != 'gpu' and use_docker != 'none' }}"
   - command: rm -rf docs/ mkdocs.yml
     when: "{{ not use_docs }}"
-  - command: rm -rf notebooks/ data/ .env.example
-    when: "{{ not use_ml }}"
+  - command: rm -rf notebooks/ data/
+    when: "{{ use_ml == 'none' }}"
   - command: rm -rf .github/workflows/ .github/dependabot.yml
     when: "{{ not ci_github }}"
   - command: rm -f .github/workflows/codeql.yml .github/workflows/dependabot-auto-merge.yml .github/dependabot.yml

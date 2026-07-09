@@ -3,10 +3,16 @@ name = "{{ project_name }}"
 version = "0.1.0"
 description = "{{ description }}"
 readme = "README.md"
-license = { text = "MIT" }
-requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.14"
 authors = [{name = "{{ author_name }}", email = "{{ author_email }}"}]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+]
 dependencies = [
+    "python-dotenv>=1.0",
 {%- if use_cli %}
     "typer>=0.12",
 {%- endif %}
@@ -18,13 +24,44 @@ dependencies = [
     "sqlalchemy>=2.0",
     "alembic>=1.13",
 {%- endif %}
+{%- if use_webapp == 'streamlit' %}
+    "streamlit>=1.37",
+{%- endif %}
+{%- if use_webapp == 'dash' %}
+    "dash>=2.17",
+{%- endif %}
+{%- if use_webapp == 'gradio' %}
+    "gradio>=4.40",
+{%- endif %}
+{%- if use_ml in ['standard', 'full'] %}
+    "numpy>=1.26",
+    "pandas>=2.2",
+    "matplotlib>=3.9",
+{%- endif %}
+{%- if use_ml == 'full' %}
+    "scikit-learn>=1.5",
+{%- endif %}
 ]
+
+[project.urls]
+Homepage = "https://github.com/{{ github_user }}/{{ project_name }}"
+Repository = "https://github.com/{{ github_user }}/{{ project_name }}"
+Issues = "https://github.com/{{ github_user }}/{{ project_name }}/issues"
+{%- if use_docs %}
+Documentation = "https://{{ github_user }}.github.io/{{ project_name }}/"
+{%- endif %}
 
 [dependency-groups]
 dev = [
     "pytest>=8.0",
 {%- if testing != 'minimal' %}
     "pytest-cov>=5.0",
+{%- endif %}
+{%- if use_api %}
+    "httpx>=0.27",
+{%- endif %}
+{%- if use_ml != 'none' %}
+    "dvc>=3.50",
 {%- endif %}
 {%- if use_typecheck %}
     "mypy>=1.10",
@@ -44,19 +81,25 @@ dev = [
     "commitizen>=4.1",
     "copier>=9.0",
 ]
-{% if use_ml or use_iot %}
+{% if use_ml != 'none' or use_iot %}
 
 [project.optional-dependencies]
-{%- if use_ml %}
+{%- if use_ml == 'minimal' %}
 ml = [
-    # Uncomment the libraries you need:
+    # Uncomment the libraries you need, then run: uv sync --extra ml
     # "numpy>=1.26",
     # "pandas>=2.2",
     # "scikit-learn>=1.5",
     # "matplotlib>=3.9",
     # "torch>=2.3",
     # "transformers>=4.40",
-    # "dvc>=3.50",
+]
+{%- endif %}
+{%- if use_ml in ['standard', 'full'] %}
+ml = [
+    # Heavy/optional extras — install with: uv sync --extra ml
+    # "torch>=2.3",
+    # "transformers>=4.40",
 ]
 {%- endif %}
 {%- if use_iot %}
@@ -78,14 +121,14 @@ iot = [
 {%- endif %}
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/{{ package_name }}"]
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py314"
 src = ["src"]
 line-length = 88
 
@@ -100,15 +143,21 @@ select = [
     "B",   # flake8-bugbear
     "SIM", # flake8-simplify
     "TC",  # flake8-type-checking
+{%- if security == 'full' %}
+    "S",   # flake8-bandit (SAST)
+{%- endif %}
     "RUF", # ruff-specific rules
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*" = ["S101"]  # asserts are expected in tests
 
 [tool.ruff.lint.isort]
 known-first-party = ["{{ package_name }}"]
 {% if use_typecheck %}
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.14"
 strict = true
 warn_return_any = true
 warn_unused_configs = true
@@ -116,12 +165,30 @@ mypy_path = "src"
 {%- if use_iot %}
 
 [[tool.mypy.overrides]]
-module = ["gpiozero", "paho", "paho.*", "serial"]
+module = ["gpiozero", "gpiozero.*", "paho", "paho.*", "serial"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "{{ package_name }}.drivers.*"
 warn_unused_ignores = false
+{%- endif %}
+{%- if use_ml in ['standard', 'full'] %}
+
+[[tool.mypy.overrides]]
+module = ["pandas"]
+ignore_missing_imports = true
+{%- endif %}
+{%- if use_ml == 'full' %}
+
+[[tool.mypy.overrides]]
+module = ["sklearn.*"]
+ignore_missing_imports = true
+{%- endif %}
+{%- if use_webapp != 'none' %}
+
+[[tool.mypy.overrides]]
+module = ["dash.*", "gradio.*"]
+ignore_missing_imports = true
 {%- endif %}
 {% endif %}
 
@@ -129,23 +196,15 @@ warn_unused_ignores = false
 testpaths = ["tests"]
 pythonpath = ["src"]
 
-[tool.bumpversion]
-current_version = "0.1.0"
-commit = true
-tag = true
-message = "chore(release): bump version {current_version} → {new_version}"
-
-[[tool.bumpversion.files]]
-filename = "pyproject.toml"
-search = 'version = "{current_version}"'
-replace = 'version = "{new_version}"'
-
-[[tool.bumpversion.files]]
-filename = "src/{{ package_name }}/__init__.py"
-search = '__version__ = "{current_version}"'
-replace = '__version__ = "{new_version}"'
-
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.0"
+version_provider = "pep621"
+version_files = ["src/{{ package_name }}/__init__.py:__version__"]
 tag_format = "v$version"
+major_version_zero = true
+update_changelog_on_bump = true
+{%- if use_docs %}
+changelog_file = "docs/changelog.md"
+{%- else %}
+changelog_file = "CHANGELOG.md"
+{%- endif %}

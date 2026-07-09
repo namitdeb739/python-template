@@ -2,7 +2,7 @@
 
 ## Version bumping
 
-The template uses [bump-my-version](https://github.com/callowayproject/bump-my-version) to keep version numbers in sync across `pyproject.toml`, `src/{{ package_name }}/__init__.py`, and `[tool.commitizen]`:
+The template uses [Commitizen](https://commitizen-tools.github.io/commitizen/) to bump the version, keep `pyproject.toml` and `src/{{ package_name }}/__init__.py` in sync, and generate the changelog from your Conventional Commits:
 
 ```bash
 just release patch    # 0.1.0 → 0.1.1
@@ -13,10 +13,12 @@ just release major    # 0.1.0 → 1.0.0
 This:
 
 1. Runs `just check` (lint + typecheck + test)
-2. Bumps version in all configured files
-3. Creates a commit with message `chore(release): bump version X → Y`
-4. Creates a git tag `vX.Y.Z`
+2. Bumps the version (`pyproject.toml` + `__init__.py`)
+3. Updates `{% if use_docs %}docs/changelog.md{% else %}CHANGELOG.md{% endif %}` from the commits since the last tag
+4. Creates a release commit and a git tag `vX.Y.Z`
 5. Pushes commit and tag to origin
+
+The increment can also be inferred from your commit history — omit the argument and run `uv run cz bump` to let Commitizen decide.
 
 ## Publishing to PyPI
 

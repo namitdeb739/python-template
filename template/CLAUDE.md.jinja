@@ -55,7 +55,7 @@ just docker-run     # run container locally
 - `src/{{ package_name }}/drivers/` — hardware drivers (serial, GPIO, MQTT)
 - `config/` — device configuration (not committed — copy from `config/device.yaml.example`)
 {% endif -%}
-{% if use_ml -%}
+{% if use_ml != 'none' -%}
 - `notebooks/` — Jupyter notebooks for exploration
 - `data/` — datasets (not committed; use DVC if `init_dvc=true`)
 {% endif %}
@@ -63,7 +63,7 @@ just docker-run     # run container locally
 ## Conventions
 
 - All code must pass `mypy --strict`{% if not use_typecheck %} (disabled in this project — enable by adding `use_typecheck=true`){% endif %}
-- Format and lint: ruff (line length 88, Python 3.11+)
+- Format and lint: ruff (line length 88, Python 3.14+)
 - Tests: pytest, fixtures in `conftest.py`
 - Commits: Conventional Commits — `feat:`, `fix:`, `docs:`, `refactor:`, etc.
 - PRs: squash-merge to main, delete branch after merge

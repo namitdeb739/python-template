@@ -27,13 +27,13 @@ A separate `docker/Dockerfile.gpu` is included for ML workloads requiring CUDA:
 just docker-build-gpu    # or: docker build -f docker/Dockerfile.gpu -t {{ project_name }}-gpu .
 ```
 
-Uses `nvidia/cuda:12.4.1-runtime-ubuntu22.04` with Python 3.11 from the deadsnakes PPA. Installs `[ml]` extras automatically.
+Uses `nvidia/cuda:12.4.1-runtime-ubuntu22.04` with Python 3.14 from the deadsnakes PPA. Installs `[ml]` extras automatically.
 
 ## Dev Containers
 
 The `.devcontainer/devcontainer.json` provides a one-click environment for [GitHub Codespaces](https://github.com/features/codespaces) and [VS Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers):
 
-- Python 3.11 base image
+- Python 3.14 base image
 - uv, just, and GitHub CLI pre-installed
 - All dev dependencies synced, pre-commit hooks installed
 - VS Code extensions auto-installed (ruff, mypy, Python, Jupyter, TOML, EditorConfig)

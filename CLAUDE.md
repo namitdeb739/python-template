@@ -13,16 +13,18 @@ Copier template that generates opinionated Python projects with uv, ruff, mypy, 
 
 ## Commands
 
+The template has no root Python package; it is tested by rendering variants
+(`just validate-*`), which is exactly what CI runs. Each variant renders the
+template and runs `ruff` + `mypy` + `pytest` against the generated project.
+
 ```bash
-just validate-standard        # render default variant and run ruff + mypy + pytest
-just validate-all             # run all 8 variants (mirrors CI matrix)
+just validate-all             # render + test all 10 variants — this IS the test suite (mirrors CI)
+just validate-standard        # render the default variant and check it
 just validate-full            # kitchen-sink: all features on
 just release [patch|minor|major]  # tag and push a release
-uv run pytest                 # test template rendering helpers only
-uv run ruff check .           # lint template helpers (src/, tests/)
 ```
 
-To test locally: `uvx copier copy --defaults . /tmp/test-output`
+To render locally without checks: `uvx copier copy --defaults . /tmp/test-output`
 
 ## Template conventions
 
@@ -32,6 +34,8 @@ To test locally: `uvx copier copy --defaults . /tmp/test-output`
 - Never add `.jinja` to files that have no template variables (`.gitignore`, static YAML, etc.)
 - `_subdirectory: template` and `_exclude` in copier.yaml control what Copier sees — do not move template root files outside `template/`
 
-## All 8 variants must pass before merging
+## All 10 variants must pass before merging
 
-`validate-standard`, `validate-minimal`, `validate-cli`, `validate-api`, `validate-db`, `validate-iot`, `validate-gpu-ml`, `validate-full`
+`validate-standard`, `validate-minimal`, `validate-cli`, `validate-api`, `validate-db`, `validate-ml`, `validate-webapp`, `validate-iot`, `validate-gpu-ml`, `validate-full`
+
+Note: `use_ml` and `use_webapp` are multi-choice (`none`/tiers), so gate on `use_ml != 'none'`, `use_ml in ['standard', 'full']`, `use_webapp == 'streamlit'`, etc. — not truthiness.

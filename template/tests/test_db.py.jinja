@@ -1,0 +1,19 @@
+"""Tests for the database layer."""
+
+from __future__ import annotations
+
+from {{ package_name }}.db.base import Base
+from {{ package_name }}.db.session import get_db
+
+
+def test_get_db_yields_session() -> None:
+    gen = get_db()
+    session = next(gen)
+    try:
+        assert session.is_active
+    finally:
+        gen.close()
+
+
+def test_base_has_metadata() -> None:
+    assert Base.metadata is not None
