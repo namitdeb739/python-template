@@ -9,10 +9,15 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
 jobs:
   validate:
     name: Validate (${{ matrix.variant }})
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -22,6 +27,8 @@ jobs:
           - cli
           - api
           - db
+          - ml
+          - webapp
           - iot
           - gpu-ml
           - full
