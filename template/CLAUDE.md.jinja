@@ -63,7 +63,7 @@ just docker-run     # run container locally
 ## Conventions
 
 - All code must pass `mypy --strict`{% if not use_typecheck %} (disabled in this project — enable by adding `use_typecheck=true`){% endif %}
-- Format and lint: ruff (line length 88, Python 3.11+)
+- Format and lint: ruff (line length 88, Python 3.14+)
 - Tests: pytest, fixtures in `conftest.py`
 - Commits: Conventional Commits — `feat:`, `fix:`, `docs:`, `refactor:`, etc.
 - PRs: squash-merge to main, delete branch after merge

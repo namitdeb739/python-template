@@ -10,7 +10,7 @@ Runs on every push to `main` and on pull requests.
 {%- if use_typecheck %}
 | **type-check** | `mypy` in strict mode |
 {%- endif %}
-| **test** | `pytest`{% if testing != 'minimal' %} with coverage{% endif %} across Python 3.11, 3.12, 3.13{% if testing != 'minimal' %}. Uploads to Codecov on 3.12{% endif %} |
+| **test** | `pytest`{% if testing != 'minimal' %} with coverage{% endif %} on Python 3.14{% if testing != 'minimal' %}. Uploads to Codecov on 3.14{% endif %} |
 {%- if security != 'none' %}
 | **audit** | `pip-audit` for known dependency vulnerabilities |
 {%- endif %}
@@ -51,7 +51,7 @@ Valid types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`
 
 `just init-remote` automatically configures branch protection on `main`:
 
-- **Required status checks**: lint,{% if use_typecheck %} type-check,{% endif %} test (3.11/3.12/3.13){% if security != 'none' %}, audit{% endif %}
+- **Required status checks**: lint,{% if use_typecheck %} type-check,{% endif %} test (3.14){% if security != 'none' %}, audit{% endif %}
 
 - **Require up-to-date branches** before merge
 - **Block force pushes** and branch deletion

@@ -70,7 +70,7 @@ def fetch_data(url: str, timeout: float = 30.0) -> bytes:
 - Run `just test` to execute the full suite
 - Run `just test -k test_name` to run specific tests
 - Run `just coverage` for a coverage report
-- CI runs tests across Python 3.11, 3.12, and 3.13
+- CI runs tests on Python 3.14
 
 ## Documentation
 
