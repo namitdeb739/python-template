@@ -9,7 +9,8 @@ Copier template that generates opinionated Python projects with uv, ruff, mypy, 
 - Files with `.jinja` extension are rendered by Copier; all others are copied verbatim
 - Copier variable syntax: `{{ variable_name }}` in `.jinja` files
 - Conditional blocks: `{% if use_docker != 'none' %}…{% endif %}`
-- `_tasks` in copier.yaml run sequentially after copy: rename package dir → remove unused features → git init → uv sync → pre-commit install
+- `_tasks` in copier.yaml run sequentially after copy: remove unused features → git init → uv sync → pre-commit install
+- The package dir is `template/src/{{ package_name }}/` — Copier renders path names too. Never rename paths in `_tasks`; that breaks `copier update`, which renders to the template's literal path
 
 ## Commands
 
@@ -34,8 +35,8 @@ To render locally without checks: `uvx copier copy --defaults . /tmp/test-output
 - Never add `.jinja` to files that have no template variables (`.gitignore`, static YAML, etc.)
 - `_subdirectory: template` and `_exclude` in copier.yaml control what Copier sees — do not move template root files outside `template/`
 
-## All 10 variants must pass before merging
+## All 11 variants must pass before merging
 
-`validate-standard`, `validate-minimal`, `validate-cli`, `validate-api`, `validate-db`, `validate-ml`, `validate-webapp`, `validate-iot`, `validate-gpu-ml`, `validate-full`
+`validate-standard`, `validate-minimal`, `validate-cli`, `validate-api`, `validate-db`, `validate-ml`, `validate-webapp`, `validate-iot`, `validate-gpu-ml`, `validate-full`, `validate-update`
 
 Note: `use_ml` and `use_webapp` are multi-choice (`none`/tiers), so gate on `use_ml != 'none'`, `use_ml in ['standard', 'full']`, `use_webapp == 'streamlit'`, etc. — not truthiness.
