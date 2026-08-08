@@ -7,7 +7,11 @@ repos:
       - id: check-yaml
       - id: check-toml
       - id: check-merge-conflict
+      # uv.lock legitimately exceeds the 500 KB default on dependency-heavy
+      # projects and has to be committed, so exempt it by name rather than
+      # raising the limit for everything.
       - id: check-added-large-files
+        exclude: ^uv\.lock$
       - id: detect-private-key
 
   # Run via uv so these hooks use the project's own pinned ruff/mypy and can

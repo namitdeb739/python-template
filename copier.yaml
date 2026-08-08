@@ -142,7 +142,8 @@ init_env:
   help: Create .env from .env.example?
   default: false
 
-_min_copier_version: "9.0.0"
+# 9.2.0 introduced _copier_operation, which the tasks below rely on.
+_min_copier_version: "9.2.0"
 _subdirectory: template
 
 _exclude:
@@ -152,9 +153,10 @@ _exclude:
   - uv.lock
 
 _tasks:
-  # Rename source package directory to match package_name
-  - command: mv src/project_name "src/{{ package_name }}"
-    when: "{{ package_name != 'project_name' }}"
+  # The package directory is templated in its own name, so Copier renders it
+  # straight to the right path. Do not reintroduce a post-copy rename here:
+  # Copier renders to the template's literal path on update too, so a rename
+  # task makes `copier update` nest a fresh copy inside the real package.
   # Remove disabled features
   - command: rm -rf .devcontainer/
     when: "{{ not use_devcontainer }}"
@@ -192,20 +194,35 @@ _tasks:
     when: "{{ security == 'none' }}"
   - command: rm -f tests/conftest.py tests/test_config.py
     when: "{{ testing == 'minimal' }}"
-  # Initialise git and make initial commit
-  - git init
-  - git config core.longpaths true
-  - git add -A
-  - 'git commit -m "chore: initial project from template"'
-  # Install dependencies and hooks
-  - uv sync --dev
+  # Initialise the repo. Copy only — on update the project already has history.
+  # `pre-commit install` and `dvc init` both need .git to exist, so this comes
+  # before them.
+  - command: git init
+    when: "{{ _copier_operation == 'copy' }}"
+  - command: git config core.longpaths true
+    when: "{{ _copier_operation == 'copy' }}"
+  # Install dependencies and hooks. Copy only, like the git tasks above: on
+  # update Copier also regenerates the old project in a scratch dir to diff
+  # against, and these would run there too — installing a venv twice and, with
+  # no .git in that scratch dir, failing outright on `pre-commit install`.
+  # Run `just setup` after an update if pyproject.toml changed.
+  - command: uv sync --dev
+    when: "{{ _copier_operation == 'copy' }}"
   - command: uv run pre-commit install
-    when: "{{ security != 'none' }}"
-  # Optional extras
+    when: "{{ security != 'none' and _copier_operation == 'copy' }}"
+  # Optional extras. Copy only — `dvc init` fails on an initialised repo, and
+  # copying .env.example over an existing .env would destroy real secrets.
   - command: uv run dvc init && uv run dvc config core.autostage true
-    when: "{{ init_dvc }}"
+    when: "{{ init_dvc and _copier_operation == 'copy' }}"
   - command: cp .env.example .env
-    when: "{{ init_env }}"
+    when: "{{ init_env and _copier_operation == 'copy' }}"
+  # Commit last, so uv.lock and any .dvc/ scaffolding land in the initial commit.
+  # Committing before `uv sync` left every fresh project dirty with an untracked
+  # uv.lock, which made `copier update` refuse to run on it.
+  - command: git add -A
+    when: "{{ _copier_operation == 'copy' }}"
+  - command: 'git commit -m "chore: initial project from template"'
+    when: "{{ _copier_operation == 'copy' }}"
 
 _message_after_copy: |
 
@@ -222,3 +239,13 @@ _message_after_copy: |
 
   Update later:
     uvx copier update --trust
+
+_message_after_update: |
+
+  {{ project_name }} updated.
+
+  Next steps:
+    just setup          # re-sync dependencies if pyproject.toml changed
+    just check          # verify lint + type-check + tests all pass
+
+  Review the diff before committing: git diff
