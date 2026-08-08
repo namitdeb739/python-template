@@ -11,10 +11,13 @@ _validate name *data_flags:
     OUT=$(mktemp -d)
     trap 'chmod -R +w "$OUT" 2>/dev/null; rm -rf "$OUT"' EXIT
     echo "▶ Validating '{{ name }}' → $OUT"
+    # The description is deliberately long enough that a one-line
+    # typer.Typer(...) would breach E501 — a two-word description hid that bug
+    # for the life of this template.
     uvx copier copy . "$OUT/project" \
         --trust --defaults --overwrite --vcs-ref=HEAD \
         --data project_name={{ name }}-project \
-        --data description="Validate {{ name }}" \
+        --data description="Validate the {{ name }} template variant" \
         --data author_name="Test" \
         --data author_email="test@example.com" \
         --data github_user=test-user \
@@ -26,6 +29,12 @@ _validate name *data_flags:
         uv run mypy src/ tests/
     fi
     uv run pytest -v
+    # A generated project must survive its own first commit, so run the hooks
+    # exactly as that commit would. --show-diff-on-failure surfaces what the
+    # whitespace fixers would have rewritten.
+    if [ -f .pre-commit-config.yaml ]; then
+        uv run pre-commit run --all-files --show-diff-on-failure
+    fi
     echo "✓ {{ name }} passed"
 
 # Validate with standard defaults
