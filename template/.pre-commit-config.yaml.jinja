@@ -10,21 +10,28 @@ repos:
       - id: check-added-large-files
       - id: detect-private-key
 
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.4
+  # Run via uv so these hooks use the project's own pinned ruff/mypy and can
+  # see its dependencies. Isolated pre-commit envs drift from pyproject.toml
+  # (a pinned ruff eventually cannot parse a newer target-version) and lack
+  # typer/pytest, which makes mypy --strict reject every decorated function.
+  - repo: local
     hooks:
       - id: ruff
-        args: [--fix]
+        name: ruff
+        entry: uv run ruff check --fix
+        language: system
+        types_or: [python, pyi]
       - id: ruff-format
+        name: ruff-format
+        entry: uv run ruff format
+        language: system
+        types_or: [python, pyi]
 {%- if use_typecheck %}
-
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.15.0
-    hooks:
       - id: mypy
-        additional_dependencies: []
+        name: mypy
+        entry: uv run mypy --config-file=pyproject.toml src/ tests/
+        language: system
         pass_filenames: false
-        entry: mypy --config-file=pyproject.toml src/ tests/
 {%- endif %}
 
   - repo: https://github.com/commitizen-tools/commitizen
