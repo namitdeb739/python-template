@@ -15,16 +15,20 @@ uvx copier copy --trust gh:namitdeb739/python-template my-project
 cd my-project
 ```
 
-Copier prompts for your project name, author details, and feature choices. Answer the questions (or hit Enter for defaults) and you're done.
+Copier prompts for your project name, author details, and feature choices. Answer the questions (or hit Enter for defaults) and you're done. `project_name` defaults to the destination directory you passed.
 
-To auto-fill author info from your git/GitHub config:
+Author details never change between projects, so answer them once in Copier's
+user settings file instead of on every run — `~/Library/Application Support/copier/settings.yml`
+on macOS, `~/.config/copier/settings.yml` on Linux:
 
-```bash
-uvx copier copy --trust gh:namitdeb739/python-template my-project \
-  --data author_name="$(git config user.name)" \
-  --data author_email="$(git config user.email)" \
-  --data github_user="$(gh api user --jq .login)"
+```yaml
+defaults:
+  author_name: Your Name
+  author_email: you@example.com
+  github_user: your-username
 ```
+
+Copier still shows those questions; it just offers the right answer, so Enter is enough. `--data author_name=...` still overrides per run.
 
 ## Features
 
@@ -49,10 +53,10 @@ To skip all prompts and get the standard setup:
 
 ```bash
 uvx copier copy --trust --defaults gh:namitdeb739/python-template my-project \
-  --data author_name="$(git config user.name)" \
-  --data author_email="$(git config user.email)" \
-  --data github_user="$(gh api user --jq .login)"
+  --data description="What it does"
 ```
+
+With the settings file above in place, `--defaults` needs no `--data` for identity.
 
 ## What's included
 
