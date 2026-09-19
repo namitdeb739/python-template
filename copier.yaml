@@ -7,6 +7,9 @@
 project_name:
   type: str
   help: Project name in kebab-case (e.g. my-ml-project)
+  # The destination directory is already the project name in every real
+  # invocation, so offer it rather than asking twice.
+  default: "{{ _copier_conf.dst_path.name }}"
   placeholder: my-project
 
 package_name:
